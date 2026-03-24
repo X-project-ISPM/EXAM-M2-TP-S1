@@ -1,0 +1,56 @@
+services:
+
+  # ─────────────────────────────────────────────────────────────────
+  # Backend Python FastAPI (port 10000)
+  # Exposé en tant que web service — uniquement appelé par le proxy
+  # ─────────────────────────────────────────────────────────────────
+  - type: web
+    name: malagasy-python
+    runtime: docker
+    dockerfilePath: ./backend/dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 10000
+
+  # ─────────────────────────────────────────────────────────────────
+  # Proxy Node.js + Express (port 8000)
+  # ─────────────────────────────────────────────────────────────────
+  - type: web
+    name: malagasy-proxy
+    runtime: docker
+    dockerfilePath: ./backend-proxy/Dockerfile
+    dockerContext: ./backend-proxy
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: NODE_ENV
+        value: production
+      - key: PYTHON_BACKEND_URL
+        value: https://malagasy-python.onrender.com
+      - key: FRONTEND_URL
+        value: https://malagasy-frontend.onrender.com
+      # ⚠ Renseigner ces clés dans le dashboard Render après le premier déploiement
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+  # ─────────────────────────────────────────────────────────────────
+  # Frontend Next.js (port 3000)
+  # NEXT_PUBLIC_PROXY_URL est injecté comme Docker build-arg
+  # ─────────────────────────────────────────────────────────────────
+  - type: web
+    name: malagasy-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Utilisé comme ARG dans le Dockerfile Next.js au moment du build
+      - key: NEXT_PUBLIC_PROXY_URL
+        value: https://malagasy-proxy.onrender.com
