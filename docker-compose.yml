@@ -37,10 +37,11 @@ services:
       - PORT=8000
       - PYTHON_BACKEND_URL=http://backend-python:8001
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://localhost:3000
     depends_on:
-      # - backend-python
-      - redis
+      backend-python:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       # Playground statique rechargé sans rebuild
       - ./backend-proxy/public:/app/public:ro
@@ -51,22 +52,28 @@ services:
   # ─────────────────────────────────────────────────────────────
   # Backend IA : Python + FastAPI (port 8001 — interne uniquement)
   # ─────────────────────────────────────────────────────────────
-  # backend-python:
-  #   build:
-  #     context: ./backend-python
-  #     dockerfile: Dockerfile
-  #   container_name: malagasy-python
-  #   # Port 8001 NON exposé à l'hôte : uniquement joignable par le proxy
-  #   expose:
-  #     - "8001"
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     # Données partagées montées en lecture seule dans le conteneur
-  #     - ./data:/app/data:ro
-  #   networks:
-  #     - malagasy-net
-  #   restart: unless-stopped
+  backend-python:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: malagasy-python
+    # Port 8001 NON exposé à l'hôte : uniquement joignable par le proxy
+    expose:
+      - "8001"
+    env_file:
+      - .env
+    volumes:
+      # Données partagées montées en lecture seule dans le conteneur
+      - ./data:/app/data:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - malagasy-net
+    restart: unless-stopped
 
   # ─────────────────────────────────────────────────────────────
   # Cache Redis (port 6379 — interne uniquement)

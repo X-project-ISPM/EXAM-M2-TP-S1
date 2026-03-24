@@ -6,7 +6,7 @@ class NGramModel:
     def __init__(self):
         base_dir = Path(__file__).resolve().parent
         # Corpus recommandé : Wikipedia ou Bible [cite: 19, 45]
-        self.corpus_path = (base_dir / "../../../data/corpus/bible_mg.txt").resolve()
+        self.corpus_path = (base_dir / "../../data/corpus/bible_mg.txt").resolve()
         self.trigram_model = defaultdict(list)
         self.bigram_model = defaultdict(list)
         self.train()

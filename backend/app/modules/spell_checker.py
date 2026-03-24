@@ -7,7 +7,7 @@ class SpellChecker:
     def __init__(self, lemmatizer):
         self.lemmatizer = lemmatizer
         base_dir = Path(__file__).resolve().parent
-        data_path = (base_dir / "../../../data/corpus/dictionary.json").resolve()
+        data_path = (base_dir / "../../data/corpus/dictionary.json").resolve()
 
         with open(data_path, "r", encoding="utf-8") as f:
             # On stocke les racines pour la comparaison
