@@ -59,7 +59,11 @@ router.post(
       const { data } = await axios.post(
         TTS_URL,
         {
-          contents: [{ parts: [{ text }] }],
+          contents: [{
+            parts: [{
+              text: `Generate audio only. Speak exactly the following transcript without adding, removing, or paraphrasing anything. Transcript: ${text}`,
+            }],
+          }],
           generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: {
@@ -93,6 +97,7 @@ router.post(
         format: "wav",
         mimeType: "audio/wav",
         encoding: "base64",
+        modelUsed: TTS_MODEL,
       });
     } catch (err) {
       console.error("[tts]", err.response?.data || err.message);

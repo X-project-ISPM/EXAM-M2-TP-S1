@@ -57,7 +57,7 @@ app.use("/api/sentiment",  require("./routes/sentiment"));
 app.use("/api/chat",       require("./routes/chat"));
 
 // ─── Routes déléguées au backend Python distant ─────────────────
-app.use("/autocomplete", require("./routes/autocomplete"));
+app.use("/api/autocomplete", require("./routes/autocomplete"));
 
 // ─── Routes Python supplémentaires (à activer quand disponibles) ─
 // app.use("/api/spellcheck",   require("./routes/spellcheck"));

@@ -1,12 +1,13 @@
 "use strict";
 
 const router = require("express").Router();
-const axios = require("axios");
 const { body } = require("express-validator");
 const { handleValidation } = require("../middleware/validate");
+const { postWithFallback } = require("../gemini");
 
-const GEMINI_MODEL = "gemini-2.5-flash";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const MAX_HISTORY_ITEMS = 4;
+const MAX_HISTORY_TEXT_LENGTH = 400;
+const MAX_MESSAGE_LENGTH = 800;
 
 const SYSTEM_PROMPT = `Tu es un assistant linguistique spécialisé en langue malgache.
 Tu aides les rédacteurs avec la conjugaison, les synonymes, la grammaire malgache, et réponds aux questions sur la langue.
@@ -31,31 +32,36 @@ router.post(
       return res.status(503).json({ error: "GOOGLE_API_KEY non configurée" });
     }
 
+    const trimmedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
+    const recentHistory = history.slice(-MAX_HISTORY_ITEMS).map((entry) => ({
+      role: entry.role,
+      text: entry.text.slice(0, MAX_HISTORY_TEXT_LENGTH),
+    }));
+
     // Construction du fil de conversation pour l'API Gemini
     const contents = [
-      ...history.map((h) => ({
+      ...recentHistory.map((h) => ({
         role: h.role,
         parts: [{ text: h.text }],
       })),
-      { role: "user", parts: [{ text: message }] },
+      { role: "user", parts: [{ text: trimmedMessage }] },
     ];
 
     try {
-      const { data } = await axios.post(
-        GEMINI_URL,
-        {
+      const { data, modelUsed } = await postWithFallback({
+        apiKey,
+        body: {
           system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 512,
+            temperature: 0.5,
+            maxOutputTokens: 256,
           },
         },
-        { params: { key: apiKey } }
-      );
+      });
 
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-      res.json({ reply });
+      res.json({ reply, modelUsed });
     } catch (err) {
       console.error("[chat]", err.response?.data || err.message);
       res.status(502).json({ error: "Service chatbot indisponible" });

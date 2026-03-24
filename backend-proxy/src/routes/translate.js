@@ -1,13 +1,10 @@
 "use strict";
 
 const router = require("express").Router();
-const axios = require("axios");
 const { body } = require("express-validator");
 const { handleValidation } = require("../middleware/validate");
 const { cache } = require("../middleware/cache");
-
-const GEMINI_MODEL = "gemini-3.1-flash-lite";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const { postWithFallback, LOW_QUOTA_SAVING_MODELS } = require("../gemini");
 
 // Noms BCP-47 → lisibles pour le prompt
 const LANG_NAMES = { mg: "Malagasy", fr: "French", en: "English", es: "Spanish", de: "German", zh: "Chinese" };
@@ -36,14 +33,14 @@ router.post(
     const prompt = `Translate the following text from ${fromName} (${from}) to ${toName} (${to}).\nReturn ONLY valid JSON in this exact format: {"translation": "<translated text>"}\n\nText:\n${text}`;
 
     try {
-      const { data } = await axios.post(
-        GEMINI_URL,
-        {
+      const { data, modelUsed } = await postWithFallback({
+        apiKey,
+        models: LOW_QUOTA_SAVING_MODELS,
+        body: {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { temperature: 0.1, maxOutputTokens: 1024, responseMimeType: "application/json" },
         },
-        { params: { key: apiKey } }
-      );
+      });
 
       const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
 
@@ -57,7 +54,7 @@ router.post(
         parsed = JSON.parse(match[0]);
       }
 
-      res.json({ text, from, to, translation: parsed.translation ?? "" });
+      res.json({ text, from, to, translation: parsed.translation ?? "", modelUsed });
     } catch (err) {
       console.error("[translate]", err.response?.data || err.message);
       res.status(502).json({ error: "Service de traduction indisponible" });

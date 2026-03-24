@@ -385,7 +385,7 @@
     <!-- TRANSLATE -->
     <div class="panel active" id="panel-translate">
       <h2><i class="mdi mdi-translate"></i> Traduction <span class="endpoint-badge">POST /api/translate</span></h2>
-      <p class="description">Traduit un texte malgache (ou autre) via Gemini 2.5 Flash. Les résultats sont mis en cache Redis 1h.</p>
+      <p class="description">Traduit un texte malgache (ou autre) via Gemini 3.1 Flash Lite Preview. Les résultats sont mis en cache Redis 1h.</p>
       <div class="form-group">
         <label>Texte à traduire</label>
         <textarea id="tr-text" placeholder="Ex: Manana ny hery ny vahoaka."></textarea>
@@ -482,7 +482,7 @@
     <!-- SENTIMENT -->
     <div class="panel" id="panel-sentiment">
       <h2><i class="mdi mdi-emoticon-outline"></i> Analyse de sentiment <span class="endpoint-badge">POST /api/sentiment</span></h2>
-      <p class="description">Score entre -1 (très négatif) et +1 (très positif) via Gemini 2.5 Flash. Cache Redis 1h.</p>
+      <p class="description">Score entre -1 (très négatif) et +1 (très positif) via Gemini 3.1 Flash Lite Preview. Cache Redis 1h.</p>
       <div class="form-group">
         <label>Texte à analyser</label>
         <textarea id="sent-text" placeholder="Ex: Faly be aho! Tsara ny zava-drehetra."></textarea>
@@ -517,7 +517,7 @@
     <!-- CHAT -->
     <div class="panel" id="panel-chat">
       <h2><i class="mdi mdi-robot"></i> Chatbot Malagasy <span class="endpoint-badge">POST /api/chat</span></h2>
-      <p class="description">Assistant linguistique propulsé par Gemini 2.5 Flash. Spécialisé sur la langue et la grammaire malgache.</p>
+      <p class="description">Assistant linguistique propulsé par Gemini 3.1 Flash Lite Preview. Spécialisé sur la langue et la grammaire malgache.</p>
       <div class="chat-history" id="chat-history">
         <div class="chat-empty">Commence une conversation…</div>
       </div>
@@ -717,7 +717,7 @@ async function callChat() {
 
   const result = await apiFetch('POST', '/api/chat', {
     message,
-    history: chatHistory.slice(-10), // 10 derniers messages
+    history: chatHistory.slice(-4),
   }).catch(e => ({ ok: false, data: { reply: 'Erreur : ' + e.message } }));
 
   typing.remove();
