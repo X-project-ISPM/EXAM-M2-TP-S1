@@ -4,9 +4,13 @@ from pathlib import Path
 class Lemmatizer:
     def __init__(self):
         # Configuration des chemins selon votre structure 
-        base_dir = Path(__file__).resolve().parent
-        # data_path = (base_dir / "../../../data/corpus/dictionary.json").resolve()
-        data_path = (base_dir / "../../data/corpus/dictionary.json").resolve()
+       # On remonte de : modules -> app -> backend (2 niveaux suffisent généralement)
+        # Mais pour être sûr, on cherche le dossier 'data' à partir de la racine backend
+        base_dir = Path(__file__).resolve().parent.parent.parent # Remonte à 'backend/'
+        data_path = base_dir / "data" / "corpus" / "dictionary.json"
+
+        # DEBUG : Affiche le chemin calculé dans ton terminal pour vérifier
+        print(f"DEBUG SpellChecker : tentative d'ouverture de {data_path}")
 
         try:
             with open(data_path, "r", encoding="utf-8") as f:
