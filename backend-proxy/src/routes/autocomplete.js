@@ -29,12 +29,16 @@ router.get(
         try {
           response = await axios.get(`${baseUrl}/autocomplete`, {
             params: { text },
-            timeout: 8000,
+            timeout: 50000, // 50s — cold start Render free tier
           });
           break;
         } catch (err) {
           const transientDns = err.code === "EAI_AGAIN" || err.code === "ENOTFOUND";
-          const transientConn = err.code === "ECONNREFUSED" || err.code === "ECONNABORTED" || err.code === "ETIMEDOUT";
+          const transientConn =
+            err.code === "ECONNREFUSED" ||
+            err.code === "ECONNABORTED" ||
+            err.code === "ETIMEDOUT" ||
+            err.code === "ERR_CANCELED"; // axios v1 timeout
 
           if ((transientDns || transientConn) && attempt < 3) {
             await sleep(500 * attempt);
@@ -47,17 +51,24 @@ router.get(
 
       res.json({ ...response.data, modelUsed: "backend-python" });
     } catch (err) {
-      if (
+      const isNetworkError =
         err.code === "EAI_AGAIN" ||
         err.code === "ENOTFOUND" ||
         err.code === "ECONNREFUSED" ||
         err.code === "ECONNABORTED" ||
-        err.code === "ETIMEDOUT"
-      ) {
-        console.error("[autocomplete] Backend Python injoignable :", err.message);
+        err.code === "ETIMEDOUT" ||
+        err.code === "ERR_CANCELED";
+
+      console.error("[autocomplete] code=%s status=%s url=%s msg=%s",
+        err.code,
+        err.response?.status,
+        `${baseUrl}/autocomplete`,
+        err.response?.data ? JSON.stringify(err.response.data) : err.message
+      );
+
+      if (isNetworkError) {
         return res.status(503).json({ error: "Service autocomplete indisponible (backend Python hors ligne)" });
       }
-      console.error("[autocomplete]", err.response?.data || err.message);
       res.status(502).json({ error: "Erreur du service autocomplete" });
     }
   }
