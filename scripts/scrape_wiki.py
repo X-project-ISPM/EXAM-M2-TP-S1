@@ -4,23 +4,23 @@ import os
 import re
 
 def is_valid_malagasy(word):
-    """Filtre strict selon les règles du TP et la phonétique[cite: 17, 51]."""
+    """Filtre strict"""
     word = word.lower()
     
     # 1. Longueur minimale (élimine le bruit)
     if len(word) < 2 or not word.isalpha():
         return False
 
-    # 2. Combinaisons interdites du sujet [cite: 51]
+    # 2. Combinaisons interdites
     forbidden = ['nb', 'mk', 'dt', 'bp', 'sz']
     if any(p in word for p in forbidden):
         return False
     
-    # 3. 'nk' interdit au début [cite: 51]
+    # 3. 'nk' interdit au début
     if word.startswith('nk'):
         return False
 
-    # 4. Vérification des voyelles (essentiel en malagasy)
+    # 4. Vérification des voyelles
     if not any(v in word for v in 'aeiouy'):
         return False
 
@@ -30,11 +30,11 @@ def collect_real_text():
     url = "https://mg.wikipedia.org/w/api.php"
     headers = {'User-Agent': 'ProjetML2_ISPM/1.0 (etudiant@ispm.mg)'}
     
-    # Paramètres pour obtenir du texte brut (plain text)
+    # Paramètres pour obtenir du texte brut
     params = {
         "action": "query",
         "format": "json",
-        "generator": "random", # On prend des pages au hasard pour varier le vocabulaire
+        "generator": "random", # pages au hasard pour varier le vocabulaire
         "grnnamespace": 0,
         "prop": "extracts",
         "explaintext": True,
@@ -42,9 +42,8 @@ def collect_real_text():
     }
     
     lexicon = set()
-    print("Extraction de texte réel en cours...")
 
-    for i in range(15): # Répéter pour accumuler du texte
+    for i in range(15): # accumulation du texte
         try:
             response = requests.get(url, params=params, headers=headers)
             data = response.json()
@@ -65,10 +64,8 @@ def collect_real_text():
 
     # Sauvegarde
     os.makedirs('data', exist_ok=True)
-    with open('data/dictionnaire_riche.json', 'w', encoding='utf-8') as f:
+    with open('data/dico.json', 'w', encoding='utf-8') as f:
         json.dump(sorted(list(lexicon)), f, ensure_ascii=False, indent=4)
     
-    print(f"\nFélicitations ! Votre dictionnaire contient {len(lexicon)} mots réels.")
-
 if __name__ == "__main__":
     collect_real_text()
