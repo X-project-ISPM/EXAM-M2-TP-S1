@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Malagasy Proxy — Playground</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22273a;
+      --border: #2e3348;
+      --accent: #6c8ef7;
+      --accent2: #48c9a9;
+      --ok: #3ecf8e;
+      --err: #f46e6e;
+      --warn: #f5a623;
+      --text: #e2e8f0;
+      --muted: #7c88a8;
+      --radius: 10px;
+      --font: 'Segoe UI', system-ui, sans-serif;
+      --mono: 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header .logo { font-size: 22px; color: var(--accent); }
+    .mdi { font-size: 18px; vertical-align: middle; line-height: 1; }
+    h2 .mdi { font-size: 20px; }
+    header h1 { font-size: 17px; font-weight: 600; letter-spacing: .3px; }
+    header .version {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    #health-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--warn);
+      transition: background .3s;
+    }
+    #health-dot.ok  { background: var(--ok); }
+    #health-dot.err { background: var(--err); }
+
+    /* ── Layout ── */
+    .container { display: flex; flex: 1; }
+
+    /* ── Sidebar nav ── */
+    nav {
+      width: 250px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 57px;
+      height: calc(100vh - 57px);
+      overflow-y: auto;
+    }
+    nav .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 6px 20px 4px;
+    }
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+    nav a:hover { color: var(--text); background: var(--surface2); }
+    nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface2); }
+    nav a .method {
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: .5px;
+    }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      padding: 30px;
+      max-width: 900px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .panel h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel .endpoint-badge {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 6px;
+      color: var(--accent2);
+    }
+    .panel .description {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input[type=text], textarea, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color .15s;
+    }
+    input[type=text]:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .row { display: flex; gap: 12px; }
+    .row .form-group { flex: 1; }
+
+    button.btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    button.btn:hover { opacity: .85; }
+    button.btn:disabled { opacity: .4; cursor: not-allowed; }
+    button.btn.loading::after {
+      content: '';
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Response box ── */
+    .response-box {
+      margin-top: 22px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .response-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+    }
+    .status-pill {
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .status-pill.ok  { background: rgba(62,207,142,.15); color: var(--ok); }
+    .status-pill.err { background: rgba(244,110,110,.15); color: var(--err); }
+    .status-pill.pending { background: rgba(245,166,35,.15); color: var(--warn); }
+
+    .cache-pill {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .cache-pill.hit  { color: var(--ok); border-color: var(--ok); }
+    .cache-pill.miss { color: var(--muted); }
+
+    .response-body {
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+      min-height: 60px;
+    }
+    .response-empty { color: var(--muted); font-style: italic; font-family: var(--font); }
+
+    /* ── Audio player ── */
+    #audio-player-wrap { margin-top: 14px; display: none; }
+    #audio-player-wrap audio { width: 100%; border-radius: 8px; }
+
+    /* ── Chat ── */
+    .chat-history {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 120px;
+      max-height: 340px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-msg {
+      max-width: 80%;
+      padding: 9px 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #fff;
+    }
+    .chat-msg.model {
+      align-self: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .chat-empty { color: var(--muted); font-size: 13px; font-style: italic; text-align: center; padding: 20px 0; }
+
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-row input { flex: 1; }
+
+    /* ── Sentiment display ── */
+    .sentiment-bar-wrap { margin-top: 10px; }
+    .sentiment-bar-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+    .sentiment-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .4s ease;
+    }
+
+    /* ── NER tags ── */
+    .ner-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .ner-tag {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    /* ── Util ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+    .time-label { font-size: 11px; color: var(--muted); margin-left: auto; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo"><i class="mdi mdi-island"></i></span>
+  <h1>Malagasy Proxy — Dev Playground</h1>
+  <span id="health-dot" title="Health check"></span>
+  <span class="version">localhost:8000</span>
+</header>
+
+<div class="container">
+
+  <!-- ── Sidebar ── -->
+  <nav>
+    <div class="section-label">Services Google</div>
+    <a href="#" data-panel="translate" class="active">
+      <span class="method">POST</span>
+      <i class="mdi mdi-translate"></i> Traduction
+    </a>
+    <a href="#" data-panel="tts">
+      <span class="method">POST</span>
+      <i class="mdi mdi-volume-high"></i> Synthèse vocale
+    </a>
+    <a href="#" data-panel="ner">
+      <span class="method">POST</span>
+      <i class="mdi mdi-tag-multiple"></i> NER
+    </a>
+    <a href="#" data-panel="sentiment">
+      <span class="method">POST</span>
+      <i class="mdi mdi-emoticon-outline"></i> Sentiment
+    </a>
+    <a href="#" data-panel="chat">
+      <span class="method">POST</span>
+      <i class="mdi mdi-robot"></i> Chatbot
+    </a>
+    <hr style="border-color: var(--border); margin: 14px 20px;">
+    <div class="section-label">Backend Python</div>
+    <a href="#" data-panel="autocomplete">
+      <span class="method" style="background:#0ea5e9">GET</span>
+      <i class="mdi mdi-auto-fix"></i> Autocomplete
+    </a>
+    <hr style="border-color: var(--border); margin: 14px 20px;">
+    <div class="section-label">Santé</div>
+    <a href="#" data-panel="health">
+      <span class="method" style="background:var(--ok)">GET</span>
+      <i class="mdi mdi-heart-pulse"></i> /health
+    </a>
+  </nav>
+
+  <!-- ── Main panels ── -->
+  <main>
+
+    <!-- TRANSLATE -->
+    <div class="panel active" id="panel-translate">
+      <h2><i class="mdi mdi-translate"></i> Traduction <span class="endpoint-badge">POST /api/translate</span></h2>
+      <p class="description">Traduit un texte malgache (ou autre) via Gemini 2.5 Flash. Les résultats sont mis en cache Redis 1h.</p>
+      <div class="form-group">
+        <label>Texte à traduire</label>
+        <textarea id="tr-text" placeholder="Ex: Manana ny hery ny vahoaka."></textarea>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>Langue source</label>
+          <select id="tr-from">
+            <option value="mg" selected>mg — Malagasy</option>
+            <option value="fr">fr — Français</option>
+            <option value="en">en — English</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Langue cible</label>
+          <select id="tr-to">
+            <option value="fr" selected>fr — Français</option>
+            <option value="en">en — English</option>
+            <option value="mg">mg — Malagasy</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="callTranslate()"><i class="mdi mdi-play"></i> Traduire</button>
+      <div class="response-box" id="tr-response-box" style="display:none">
+        <div class="response-header">
+          Réponse
+          <span class="status-pill" id="tr-status"></span>
+          <span class="cache-pill" id="tr-cache"></span>
+          <span class="time-label" id="tr-time"></span>
+        </div>
+        <div class="response-body" id="tr-body"></div>
+      </div>
+    </div>
+
+    <!-- TTS -->
+    <div class="panel" id="panel-tts">
+      <h2><i class="mdi mdi-volume-high"></i> Synthèse vocale <span class="endpoint-badge">POST /api/tts</span></h2>
+      <p class="description">Convertit du texte en audio WAV via Gemini 2.5 Flash TTS. Retourne un base64 joué directement dans le navigateur. Cache 24h.</p>
+      <div class="form-group">
+        <label>Texte à lire</label>
+        <textarea id="tts-text" placeholder="Ex: Manana ny hery ny vahoaka."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Voix</label>
+        <select id="tts-lang">
+          <option value="Aoede" selected>Aoede (féminine)</option>
+          <option value="Kore">Kore (féminine)</option>
+          <option value="Schedar">Schedar (féminine)</option>
+          <option value="Sulafat">Sulafat (féminine)</option>
+          <option value="Charon">Charon (masculine)</option>
+          <option value="Fenrir">Fenrir (masculine)</option>
+          <option value="Puck">Puck (masculine)</option>
+          <option value="Orbit">Orbit (neutre)</option>
+        </select>
+      </div>
+      <button class="btn" onclick="callTTS()"><i class="mdi mdi-play"></i> Générer l'audio</button>
+      <div class="response-box" id="tts-response-box" style="display:none">
+        <div class="response-header">
+          Réponse
+          <span class="status-pill" id="tts-status"></span>
+          <span class="cache-pill" id="tts-cache"></span>
+          <span class="time-label" id="tts-time"></span>
+        </div>
+        <div class="response-body" id="tts-body"></div>
+      </div>
+      <div id="audio-player-wrap">
+        <audio id="audio-player" controls></audio>
+      </div>
+    </div>
+
+    <!-- NER -->
+    <div class="panel" id="panel-ner">
+      <h2><i class="mdi mdi-tag-multiple"></i> Entités nommées (NER) <span class="endpoint-badge">POST /api/ner</span></h2>
+      <p class="description">Détecte les entités (personnes, lieux, organisations…) via Google Natural Language API. Cache Redis 1h.</p>
+      <div class="form-group">
+        <label>Texte à analyser</label>
+        <textarea id="ner-text" placeholder="Ex: Antananarivo no renivohitr'i Madagasikara."></textarea>
+      </div>
+      <button class="btn" onclick="callNER()"><i class="mdi mdi-play"></i> Détecter les entités</button>
+      <div id="ner-tags-wrap" style="display:none">
+        <div class="ner-tags" id="ner-tags"></div>
+      </div>
+      <div class="response-box" id="ner-response-box" style="display:none">
+        <div class="response-header">
+          JSON brut
+          <span class="status-pill" id="ner-status"></span>
+          <span class="cache-pill" id="ner-cache"></span>
+          <span class="time-label" id="ner-time"></span>
+        </div>
+        <div class="response-body" id="ner-body"></div>
+      </div>
+    </div>
+
+    <!-- SENTIMENT -->
+    <div class="panel" id="panel-sentiment">
+      <h2><i class="mdi mdi-emoticon-outline"></i> Analyse de sentiment <span class="endpoint-badge">POST /api/sentiment</span></h2>
+      <p class="description">Score entre -1 (très négatif) et +1 (très positif) via Gemini 2.5 Flash. Cache Redis 1h.</p>
+      <div class="form-group">
+        <label>Texte à analyser</label>
+        <textarea id="sent-text" placeholder="Ex: Faly be aho! Tsara ny zava-drehetra."></textarea>
+      </div>
+      <button class="btn" onclick="callSentiment()"><i class="mdi mdi-play"></i> Analyser</button>
+      <div id="sent-visual" style="display:none">
+        <div class="sentiment-bar-wrap">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
+            <span><i class="mdi mdi-emoticon-sad-outline"></i> Négatif (-1)</span>
+            <span id="sent-label" style="font-weight:700;font-size:14px"></span>
+            <span>Positif (+1) <i class="mdi mdi-emoticon-happy-outline"></i></span>
+          </div>
+          <div class="sentiment-bar-track">
+            <div class="sentiment-bar-fill" id="sent-bar" style="width:50%"></div>
+          </div>
+          <div style="text-align:center;font-size:13px;color:var(--muted)">
+            Score : <strong id="sent-score"></strong> &nbsp;|&nbsp; Magnitude : <strong id="sent-mag"></strong>
+          </div>
+        </div>
+      </div>
+      <div class="response-box" id="sent-response-box" style="display:none">
+        <div class="response-header">
+          JSON brut
+          <span class="status-pill" id="sent-status"></span>
+          <span class="cache-pill" id="sent-cache"></span>
+          <span class="time-label" id="sent-time"></span>
+        </div>
+        <div class="response-body" id="sent-body"></div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="panel" id="panel-chat">
+      <h2><i class="mdi mdi-robot"></i> Chatbot Malagasy <span class="endpoint-badge">POST /api/chat</span></h2>
+      <p class="description">Assistant linguistique propulsé par Gemini 2.5 Flash. Spécialisé sur la langue et la grammaire malgache.</p>
+      <div class="chat-history" id="chat-history">
+        <div class="chat-empty">Commence une conversation…</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ex: Comment conjuguer 'mandeha' ?" onkeydown="if(event.key==='Enter') callChat()" />
+        <button class="btn" onclick="callChat()"><i class="mdi mdi-send"></i> Envoyer</button>
+      </div>
+      <button style="margin-top:10px;background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px" onclick="clearChat()"><i class="mdi mdi-delete-outline"></i> Effacer la conversation</button>
+    </div>
+
+    <!-- AUTOCOMPLETE -->
+    <div class="panel" id="panel-autocomplete">
+      <h2><i class="mdi mdi-auto-fix"></i> Autocomplete <span class="endpoint-badge">GET /api/autocomplete</span></h2>
+      <p class="description">Correction orthographique et prédiction de mots suivants via le backend Python distant (192.168.1.120). Cache 5 min.</p>
+      <div class="form-group">
+        <label>Texte saisi</label>
+        <input type="text" id="autocomplete-text" placeholder="Ex: manana ny her" style="width:100%;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px" oninput="debouncedAutocomplete()" />
+      </div>
+      <div class="response-box" id="autocomplete-response-box" style="display:none">
+        <div class="response-header">
+          Réponse
+          <span class="status-pill" id="autocomplete-status"></span>
+          <span class="cache-pill" id="autocomplete-cache"></span>
+          <span class="time-label" id="autocomplete-time"></span>
+        </div>
+        <div class="response-body" id="autocomplete-body"></div>
+      </div>
+      <div id="autocomplete-suggestions" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="panel" id="panel-health">
+      <h2><i class="mdi mdi-heart-pulse"></i> Health check <span class="endpoint-badge">GET /health</span></h2>
+      <p class="description">Vérifie que le serveur proxy est en ligne.</p>
+      <button class="btn" onclick="callHealth()"><i class="mdi mdi-play"></i> Ping /health</button>
+      <div class="response-box" id="health-response-box" style="display:none">
+        <div class="response-header">
+          Réponse
+          <span class="status-pill" id="health-status"></span>
+          <span class="time-label" id="health-time"></span>
+        </div>
+        <div class="response-body" id="health-body"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────
+const navLinks = document.querySelectorAll('nav a[data-panel]');
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + link.dataset.panel).classList.add('active');
+  });
+});
+
+// ── Helpers ───────────────────────────────────────────────────
+async function apiFetch(method, path, body) {
+  const t0 = Date.now();
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data, ms: Date.now() - t0, cache: res.headers.get('X-Cache') };
+}
+
+function showResponse(prefix, result) {
+  document.getElementById(prefix + '-response-box').style.display = 'block';
+  const pill = document.getElementById(prefix + '-status');
+  pill.textContent = result.status;
+  pill.className = 'status-pill ' + (result.ok ? 'ok' : 'err');
+  document.getElementById(prefix + '-body').textContent = JSON.stringify(result.data, null, 2);
+  const cacheEl = document.getElementById(prefix + '-cache');
+  if (cacheEl && result.cache) {
+    cacheEl.innerHTML = result.cache === 'HIT' ? '<i class="mdi mdi-lightning-bolt"></i> Cache HIT' : '<i class="mdi mdi-cloud-outline"></i> Cache MISS';
+    cacheEl.className = 'cache-pill ' + (result.cache === 'HIT' ? 'hit' : 'miss');
+  }
+  document.getElementById(prefix + '-time').textContent = result.ms + ' ms';
+}
+
+function setLoading(btn, on) {
+  btn.disabled = on;
+  btn.classList.toggle('loading', on);
+}
+
+// ── Translate ─────────────────────────────────────────────────
+async function callTranslate() {
+  const btn = event.target;
+  setLoading(btn, true);
+  const result = await apiFetch('POST', '/api/translate', {
+    text: document.getElementById('tr-text').value,
+    from: document.getElementById('tr-from').value,
+    to:   document.getElementById('tr-to').value,
+  }).catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+  setLoading(btn, false);
+  showResponse('tr', result);
+}
+
+// ── TTS ───────────────────────────────────────────────────────
+async function callTTS() {
+  const btn = event.target;
+  setLoading(btn, true);
+  const result = await apiFetch('POST', '/api/tts', {
+    text: document.getElementById('tts-text').value,
+    voice: document.getElementById('tts-lang').value,
+  }).catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+  setLoading(btn, false);
+  showResponse('tts', result);
+
+  if (result.ok && result.data.audio) {
+    const wrap = document.getElementById('audio-player-wrap');
+    const player = document.getElementById('audio-player');
+    const mime = result.data.mimeType || 'audio/wav';
+    player.src = `data:${mime};base64,` + result.data.audio;
+    wrap.style.display = 'block';
+    player.play().catch(() => {});
+  }
+}
+
+// ── NER ───────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  PERSON:        ['#a78bfa','#3b1fa8'],
+  LOCATION:      ['#34d399','#064e3b'],
+  ORGANIZATION:  ['#60a5fa','#1e3a5f'],
+  EVENT:         ['#fb923c','#5c2210'],
+  WORK_OF_ART:   ['#f472b6','#5c1939'],
+  CONSUMER_GOOD: ['#fbbf24','#451a03'],
+  OTHER:         ['#94a3b8','#1e293b'],
+};
+
+async function callNER() {
+  const btn = event.target;
+  setLoading(btn, true);
+  const result = await apiFetch('POST', '/api/ner', {
+    text: document.getElementById('ner-text').value,
+  }).catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+  setLoading(btn, false);
+  showResponse('ner', result);
+
+  if (result.ok && result.data.entities) {
+    const container = document.getElementById('ner-tags');
+    container.innerHTML = '';
+    result.data.entities.forEach(e => {
+      const [fg, bg] = TYPE_COLORS[e.type] || TYPE_COLORS.OTHER;
+      const tag = document.createElement('span');
+      tag.className = 'ner-tag';
+      tag.style.cssText = `color:${fg};background:${bg}20;border-color:${fg}40`;
+      tag.title = `Saillance : ${(e.salience * 100).toFixed(1)}%`;
+      tag.textContent = `${e.name} · ${e.type}`;
+      container.appendChild(tag);
+    });
+    document.getElementById('ner-tags-wrap').style.display = 'block';
+  }
+}
+
+// ── Sentiment ─────────────────────────────────────────────────
+async function callSentiment() {
+  const btn = event.target;
+  setLoading(btn, true);
+  const result = await apiFetch('POST', '/api/sentiment', {
+    text: document.getElementById('sent-text').value,
+  }).catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+  setLoading(btn, false);
+  showResponse('sent', result);
+
+  if (result.ok && result.data.score !== undefined) {
+    const { score, magnitude, label } = result.data;
+    const pct = ((score + 1) / 2 * 100).toFixed(1);
+    const bar = document.getElementById('sent-bar');
+    bar.style.width = pct + '%';
+    bar.style.background = score > 0.2 ? 'var(--ok)' : score < -0.2 ? 'var(--err)' : 'var(--warn)';
+    document.getElementById('sent-label').textContent = label.toUpperCase();
+    document.getElementById('sent-score').textContent = score.toFixed(3);
+    document.getElementById('sent-mag').textContent   = magnitude.toFixed(3);
+    document.getElementById('sent-visual').style.display = 'block';
+  }
+}
+
+// ── Chat ──────────────────────────────────────────────────────
+let chatHistory = [];
+
+async function callChat() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+
+  addChatBubble('user', message);
+  chatHistory.push({ role: 'user', text: message });
+
+  const typing = addChatBubble('model', '…');
+
+  const result = await apiFetch('POST', '/api/chat', {
+    message,
+    history: chatHistory.slice(-10), // 10 derniers messages
+  }).catch(e => ({ ok: false, data: { reply: 'Erreur : ' + e.message } }));
+
+  typing.remove();
+
+  const reply = result.data.reply || result.data.error || 'Pas de réponse';
+  addChatBubble('model', reply);
+  if (result.ok) chatHistory.push({ role: 'model', text: reply });
+}
+
+function addChatBubble(role, text) {
+  const history = document.getElementById('chat-history');
+  const empty = history.querySelector('.chat-empty');
+  if (empty) empty.remove();
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.textContent = text;
+  history.appendChild(div);
+  history.scrollTop = history.scrollHeight;
+  return div;
+}
+
+function clearChat() {
+  chatHistory = [];
+  const h = document.getElementById('chat-history');
+  h.innerHTML = '<div class="chat-empty">Commence une conversation…</div>';
+}
+
+// ── Autocomplete ──────────────────────────────────────────────
+let autocompleteTimer = null;
+function debouncedAutocomplete() {
+  clearTimeout(autocompleteTimer);
+  autocompleteTimer = setTimeout(callAutocomplete, 350);
+}
+
+async function callAutocomplete() {
+  const text = document.getElementById('autocomplete-text').value.trim();
+  if (!text) return;
+
+  const result = await apiFetch('GET', '/api/autocomplete?text=' + encodeURIComponent(text))
+    .catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+
+  showResponse('autocomplete', result);
+
+  const container = document.getElementById('autocomplete-suggestions');
+  container.innerHTML = '';
+  const suggestions = result.data?.suggestions ?? [];
+  const type = result.data?.type;
+
+  if (suggestions.length === 0) {
+    container.innerHTML = '<span style="color:var(--muted);font-size:13px">Aucune suggestion</span>';
+    return;
+  }
+
+  const typeColor = type === 'correction' ? '#f59e0b' : '#34d399';
+  const typeLabel = type === 'correction' ? 'Correction' : type === 'prediction' ? 'Prédiction' : '';
+  if (typeLabel) {
+    const badge = document.createElement('span');
+    badge.style.cssText = `background:${typeColor}22;color:${typeColor};border:1px solid ${typeColor}44;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;align-self:center`;
+    badge.textContent = typeLabel;
+    container.appendChild(badge);
+  }
+
+  suggestions.forEach(word => {
+    const chip = document.createElement('button');
+    chip.style.cssText = 'background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;transition:background .15s';
+    chip.textContent = word;
+    chip.onmouseover = () => chip.style.background = 'var(--accent)';
+    chip.onmouseout  = () => chip.style.background = 'var(--surface-2)';
+    chip.onclick = () => {
+      const input = document.getElementById('autocomplete-text');
+      const parts = input.value.trimEnd().split(' ');
+      if (type === 'correction') parts[parts.length - 1] = word;
+      else parts.push(word);
+      input.value = parts.join(' ') + ' ';
+      input.focus();
+      callAutocomplete();
+    };
+    container.appendChild(chip);
+  });
+}
+
+// ── Health ────────────────────────────────────────────────────
+async function callHealth() {
+  const btn = event.target;
+  setLoading(btn, true);
+  const result = await apiFetch('GET', '/health').catch(e => ({ ok: false, status: 0, data: { error: e.message }, ms: 0 }));
+  setLoading(btn, false);
+  document.getElementById('health-response-box').style.display = 'block';
+  const pill = document.getElementById('health-status');
+  pill.textContent = result.status;
+  pill.className = 'status-pill ' + (result.ok ? 'ok' : 'err');
+  document.getElementById('health-body').textContent = JSON.stringify(result.data, null, 2);
+  document.getElementById('health-time').textContent = result.ms + ' ms';
+}
+
+// ── Auto health check au démarrage ────────────────────────────
+(async () => {
+  const dot = document.getElementById('health-dot');
+  try {
+    const res = await fetch('/health');
+    dot.className = res.ok ? 'ok' : 'err';
+  } catch {
+    dot.className = 'err';
+  }
+})();
+</script>
+</body>
+</html>

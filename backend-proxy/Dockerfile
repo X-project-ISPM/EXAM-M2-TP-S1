@@ -6,8 +6,9 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
-# Copier le code source
+# Copier le code source et les assets statiques
 COPY src/ ./src/
+COPY public/ ./public/
 
 EXPOSE 8000
 
