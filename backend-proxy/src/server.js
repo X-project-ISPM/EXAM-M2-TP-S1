@@ -39,16 +39,16 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50kb" })); // limite la taille du body
 
-// ─── Rate limiting global (60 req/min par IP) ────────────────
-app.use(
-  rateLimit({
-    windowMs: 60 * 1000,
-    max: 60,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Trop de requêtes, réessayez dans une minute." },
-  })
-);
+// ─── Rate limiting (60 req/min par IP) — exclu pour /api/autocomplete ───
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path.startsWith("/api/autocomplete"),
+  message: { error: "Trop de requêtes, réessayez dans une minute." },
+});
+app.use(limiter);
 
 // ─── Health check ─────────────────────────────────────────────
 app.get("/health", (_req, res) => {
