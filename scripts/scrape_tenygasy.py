@@ -2,57 +2,78 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+import time
+import urllib3
+
+# Désactive les alertes SSL pour éviter le blocage [cite: 47]
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from scrape_wiki import is_valid_malagasy 
 
-def scrape_official_lexicon():
-    # Exemple pour une section du dictionnaire
-    url = "http://tenymalagasy.org/bins/teny2/A" 
+def get_all_list_links():
+    index_url = "https://tenymalagasy.org/bins/alphaLists"
     headers = {'User-Agent': 'Projet_IA_ISPM_Etudiant/1.0'}
-    
-    new_words = set()
-    
+    links = []
+
     try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        # verify=False pour passer l'erreur de certificat SSL [cite: 47]
+        response = requests.get(index_url, headers=headers, verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Extraction des mots (dans des balises spécifiques sur ce site)
-        for entry in soup.find_all('b'): # À ajuster selon l'inspection HTML du site
-            word = entry.text.strip()
-            if is_valid_malagasy(word):
-                new_words.add(word.lower())
-                
-        return new_words
+        for a in soup.find_all('a', href=True):
+            if 'alphaLists' in a['href'] and a['href'] != 'alphaLists':
+                full_url = f"https://tenymalagasy.org{a['href']}"
+                if full_url not in links:
+                    links.append(full_url)
     except Exception as e:
-        print(f"Erreur sur TenyMalagasy: {e}")
-        return set()
-
-import os
-
-def merge_and_save(new_data):
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        print(f"Erreur lors de la lecture de l'index : {e}")
     
-    data_dir = os.path.join(root_dir, 'data')
-    path = os.path.join(data_dir, 'dico.json')
-    
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-        print(f"Dossier créé : {data_dir}")
+    return links
 
-    # Chargement de l'existant
-    existing_data = set()
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f:
-            existing_data = set(json.load(f))
+def scrape_words_from_link(url):
+    headers = {'User-Agent': 'Projet_IA_ISPM_Etudiant/1.0'}
+    words_found = set()
+    try:
+        response = requests.get(url, headers=headers, verify=False)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # On cible les balises <b> qui contiennent les entrées de dictionnaire sur ce site 
+        for b in soup.find_all('b'):
+            word = b.text.strip()
+            if is_valid_malagasy(word): 
+                words_found.add(word.lower())
+    except Exception as e:
+        print(f"Erreur sur {url} : {e}")
+    return words_found
 
-    # Fusion et sauvegarde
-    existing_data.update(new_data)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(sorted(list(existing_data)), f, ensure_ascii=False, indent=4)
+def main():
+    print("1. Récupération de tous les liens de l'index...")
+    all_links = get_all_list_links()
+    print(f"Nombre de pages à parcourir : {len(all_links)}")
+
+    final_lexicon = set()
     
-    print(f"Succès ! {len(existing_data)} mots sont maintenant dans {path}")
+    for i, link in enumerate(all_links):
+        print(f"[{i+1}/{len(all_links)}] Scraping : {link}")
+        new_words = scrape_words_from_link(link)
+        final_lexicon.update(new_words)
+        
+        time.sleep(0.5)
+
+    # Sauvegarde finale dans /data 
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_path = os.path.join(base_dir, 'data', 'dico.json')
+    
+    # Charger l'existant pour fusionner  
+    if os.path.exists(output_path):
+        with open(output_path, 'r', encoding='utf-8') as f:
+            existing = json.load(f)
+            final_lexicon.update(existing)
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(sorted(list(final_lexicon)), f, ensure_ascii=False, indent=4)
+    
+    print(f"\nTerminé ! Dictionnaire total : {len(final_lexicon)} mots.")
 
 if __name__ == "__main__":
-    mots_officiels = scrape_official_lexicon()
-    merge_and_save(mots_officiels)
+    main()

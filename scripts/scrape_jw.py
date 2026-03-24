@@ -2,62 +2,64 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-import time
 import re
+
 from scrape_wiki import is_valid_malagasy 
 
-def scrape_jw_malagasy():
-    base_url = "https://www.jw.org/mg/zavatra-misy/boky-gazety/"
-    headers = {'User-Agent': 'Projet_IA_ISPM_Etudiant/1.0 (ispm.mg)'}
-    
+def scrape_jw_source(url, label):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Projet_ISPM_NLP/1.0'}
     new_words = set()
-
+    
+    print(f"Extraction des {label} sur JW.org...")
+    
     try:
-        response = requests.get(base_url, headers=headers)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # On récupère les liens vers les derniers articles pour extraire du texte nouveau
-        links = [a['href'] for a in soup.find_all('a', href=True) if '/mg/' in a['href']][:10]
-
-        for link in links:
-            full_url = "https://www.jw.org" + link if link.startswith('/') else link
-            print(f"Extraction de : {full_url}")
-            
-            page = requests.get(full_url, headers=headers)
-            page_soup = BeautifulSoup(page.text, 'html.parser')
-            
-            paragraphs = page_soup.find_all('p')
-            for p in paragraphs:
-                words = re.findall(r'\b\w+\b', p.text)
-                for w in words:
-                    if is_valid_malagasy(w):
-                        new_words.add(w.lower())
-            
-            time.sleep(1) 
-
+        # On récupère tout le texte informatif pour enrichir le lexique
+        text_elements = soup.find_all(['h3', 'div'], class_=['synopsis', 'publicationText'])
+        
+        for element in text_elements:
+            # Extraction des mots individuels
+            words = re.findall(r'\b\w+\b', element.text)
+            for w in words:
+                if is_valid_malagasy(w):
+                    new_words.add(w.lower())
+                    
         return new_words
     except Exception as e:
-        print(f"Erreur sur JW.org: {e}")
+        print(f"Erreur lors du scraping de {label}: {e}")
         return set()
 
-def merge_with_main_dict(new_set):
+def merge_to_rich_dictionary(words_to_add):
+    # Gestion du chemin relatif pour pointer vers /data à la racine
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = os.path.join(base_dir, 'data', 'dictionnaire_riche.json')
+    path = os.path.join(base_dir, 'data', 'dico.json')
     
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
+    lexicon = set()
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
-            existing = set(json.load(f))
-    else:
-        existing = set()
-
-    updated = existing.union(new_set)
+            lexicon = set(json.load(f))
+    
+    lexicon.update(words_to_add)
     
     with open(path, 'w', encoding='utf-8') as f:
-        json.dump(sorted(list(updated)), f, ensure_ascii=False, indent=4)
-    print(f"Mise à jour terminée. Total : {len(updated)} mots.")
+        json.dump(sorted(list(lexicon)), f, ensure_ascii=False, indent=4)
+    
+    print(f"Mise à jour effectuée : {len(lexicon)} mots au total dans le dictionnaire.")
 
 if __name__ == "__main__":
-    mots_jw = scrape_jw_malagasy()
-    if mots_jw:
-        merge_with_main_dict(mots_jw)
+    sources = [
+        ("https://www.jw.org/mg/zavatra-misy/boky/", "Livres (Boky)"),
+        ("https://www.jw.org/mg/zavatra-misy/gazety/", "Revues (Gazety)")
+    ]
+    
+    all_new_words = set()
+    for url, label in sources:
+        words = scrape_jw_source(url, label)
+        all_new_words.update(words)
+    
+    merge_to_rich_dictionary(all_new_words)
