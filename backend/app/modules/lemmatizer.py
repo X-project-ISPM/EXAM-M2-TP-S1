@@ -6,7 +6,7 @@ class Lemmatizer:
         # Configuration des chemins selon votre structure 
         base_dir = Path(__file__).resolve().parent
         # data_path = (base_dir / "../../../data/corpus/dictionary.json").resolve()
-        data_path = (base_dir / "../data/corpus/dictionary.json").resolve()
+        data_path = (base_dir / "../../data/corpus/dictionary.json").resolve()
 
         try:
             with open(data_path, "r", encoding="utf-8") as f:
