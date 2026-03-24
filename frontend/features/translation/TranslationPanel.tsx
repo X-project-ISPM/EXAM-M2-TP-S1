@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/hooks';
 import { useTranslations } from 'next-intl';
 import { Button, Spinner } from '@/components/atoms';
+import { IconChevronRight } from '@/components/atoms/Icons';
 import styles from './TranslationPanel.module.css';
 
 interface TranslationPanelProps {
@@ -43,25 +44,31 @@ export function TranslationPanel({ initialText = '', textToTranslate }: Translat
       <div className={styles.title}>{t('title')}</div>
 
       <div className={styles.langRow}>
-        <select
-          className={styles.langSelect}
-          value={sourceLang}
-          onChange={(e) => setSourceLang(e.target.value)}
-        >
-          <option value="mg">{t('malagasy')}</option>
-          <option value="fr">{t('french')}</option>
-          <option value="en">{t('english')}</option>
-        </select>
+        <div className={styles.selectWrapper}>
+          <select
+            className={styles.langSelect}
+            value={sourceLang}
+            onChange={(e) => setSourceLang(e.target.value)}
+          >
+            <option value="mg">{t('malagasy')}</option>
+            <option value="fr">{t('french')}</option>
+            <option value="en">{t('english')}</option>
+          </select>
+          <IconChevronRight size={12} className={styles.selectChevron} />
+        </div>
         <span className={styles.arrow}>→</span>
-        <select
-          className={styles.langSelect}
-          value={targetLang}
-          onChange={(e) => setTargetLang(e.target.value)}
-        >
-          <option value="fr">{t('french')}</option>
-          <option value="mg">{t('malagasy')}</option>
-          <option value="en">{t('english')}</option>
-        </select>
+        <div className={styles.selectWrapper}>
+          <select
+            className={styles.langSelect}
+            value={targetLang}
+            onChange={(e) => setTargetLang(e.target.value)}
+          >
+            <option value="fr">{t('french')}</option>
+            <option value="mg">{t('malagasy')}</option>
+            <option value="en">{t('english')}</option>
+          </select>
+          <IconChevronRight size={12} className={styles.selectChevron} />
+        </div>
       </div>
 
       <textarea

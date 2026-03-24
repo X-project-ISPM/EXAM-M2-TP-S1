@@ -4,3 +4,4 @@ export { useTranslation } from './useTranslation';
 export { useTTS } from './useTTS';
 export { useAutocomplete } from './useAutocomplete';
 export { useChat } from './useChat';
+export { useSentiment } from './useSentiment';

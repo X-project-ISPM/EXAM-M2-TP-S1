@@ -31,8 +31,23 @@
     "listen": "Listen (TTS)"
   },
   "sidebar": {
-    "spellCheck": "⚠ Spell Check",
-    "translation": "🌐 Translation"
+    "spellCheck": "Spell Check",
+    "translation": "Translation",
+    "analysis": "Analysis"
+  },
+  "sentiment": {
+    "analyzeBtn": "Analyze text",
+    "analyzing": "Analyzing...",
+    "error": "Error during analysis.",
+    "sentiment": "Sentiment",
+    "words": "words",
+    "chars": "chars",
+    "entities": "entities",
+    "detectedEntities": "Detected entities",
+    "emptyHint": "Click \"Analyze\" to see the sentiment and entities of the text.",
+    "labelPositive": "Positive",
+    "labelNegative": "Negative",
+    "labelNeutral": "Neutral"
   },
   "spellcheck": {
     "title": "Spell Check",
@@ -47,7 +62,7 @@
     "translateBtn": "Translate"
   },
   "chat": {
-    "title": "🤖 AI Assistant",
+    "title": "AI Assistant",
     "emptyState": "Ask me anything about Malagasy language!",
     "typing": "AI is typing...",
     "inputPlaceholder": "Type a message...",

@@ -4,6 +4,7 @@ import type { Editor } from '@tiptap/react';
 import { useTranslations } from 'next-intl';
 import styles from './Toolbar.module.css';
 import { classNames } from '@/utils';
+import { IconGlobe, IconVolume, IconBarChart } from '@/components/atoms/Icons';
 
 interface ToolbarProps {
   editor: Editor | null;
@@ -107,17 +108,17 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
       <div className={styles.group}>
         {onTranslate && (
           <button className={styles.toolbarBtn} onClick={onTranslate} title={t('translate')} type="button">
-            🌐
+            <IconGlobe size={16} />
           </button>
         )}
         {onTTS && (
           <button className={styles.toolbarBtn} onClick={onTTS} title={t('tts')} type="button">
-            🔊
+            <IconVolume size={16} />
           </button>
         )}
         {onAnalyze && (
           <button className={styles.toolbarBtn} onClick={onAnalyze} title={t('analyze')} type="button">
-            🧠
+            <IconBarChart size={16} />
           </button>
         )}
       </div>

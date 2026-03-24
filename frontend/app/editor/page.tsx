@@ -5,7 +5,8 @@ import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { TopBar } from '@/components/organisms/TopBar';
 import { Sidebar } from '@/components/organisms/Sidebar';
-import { useSpellcheck } from '@/hooks';
+import { useSpellcheck, useSentiment } from '@/hooks';
+import { IconChat } from '@/components/atoms/Icons';
 import styles from './editor.module.css';
 
 // Dynamic imports for heavy components
@@ -25,11 +26,14 @@ export default function EditorPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [textToTranslate, setTextToTranslate] = useState('');
+  const [editorText, setEditorText] = useState('');
 
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
+  const { analyze, result: sentimentResult, isLoading: isSentimentLoading, error: sentimentError } = useSentiment();
 
   const handleTextChange = useCallback(
     (text: string) => {
+      setEditorText(text);
       checkSpelling(text);
     },
     [checkSpelling]
@@ -41,6 +45,11 @@ export default function EditorPage() {
     },
     []
   );
+
+  const handleAnalyze = useCallback(() => {
+    const textToAnalyze = selectedText.trim() || editorText.trim();
+    if (textToAnalyze) analyze(textToAnalyze);
+  }, [selectedText, editorText, analyze]);
 
   return (
     <div className={styles.layout}>
@@ -55,6 +64,7 @@ export default function EditorPage() {
             onTextChange={handleTextChange}
             onSelectionChange={handleSelectionChange}
             onTranslate={(text) => setTextToTranslate(text)}
+            onAnalyze={handleAnalyze}
           />
         </main>
 
@@ -65,6 +75,11 @@ export default function EditorPage() {
           isVisible={sidebarVisible}
           textToTranslate={textToTranslate}
           onClose={() => setSidebarVisible(false)}
+          sentimentResult={sentimentResult}
+          isSentimentLoading={isSentimentLoading}
+          sentimentError={sentimentError}
+          onAnalyze={handleAnalyze}
+          editorText={editorText}
         />
 
         {chatOpen && (
@@ -82,7 +97,7 @@ export default function EditorPage() {
           type="button"
           aria-label={t('openChat')}
         >
-          💬
+          <IconChat size={20} />
         </button>
       )}
     </div>

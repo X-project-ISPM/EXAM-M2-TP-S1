@@ -5,6 +5,7 @@ import { useChat } from '@/hooks';
 import { useTranslations } from 'next-intl';
 import { classNames } from '@/utils';
 import { sanitizeText } from '@/utils';
+import { IconChat, IconX } from '@/components/atoms/Icons';
 import styles from './ChatPanel.module.css';
 
 interface ChatPanelProps {
@@ -41,16 +42,19 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   return (
     <div className={styles.chatPanel}>
       <div className={styles.header}>
-        <span className={styles.headerTitle}>{t('title')}</span>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.125rem', color: 'var(--color-text-muted)' }} type="button">
-          ✕
+        <span className={styles.headerTitle}>
+          <IconChat size={15} />
+          {t('title')}
+        </span>
+        <button onClick={onClose} className={styles.closeBtn} type="button" aria-label="Close">
+          <IconX size={15} />
         </button>
       </div>
 
       <div className={styles.messages}>
         {messages.length === 0 && (
           <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>💬</span>
+            <IconChat size={32} className={styles.emptyIcon} />
             <span>{t('emptyState')}</span>
           </div>
         )}

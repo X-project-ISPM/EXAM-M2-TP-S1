@@ -1,211 +1,197 @@
-<<<<<<< HEAD
-=======
-# EXAM-M2-TP-S1
+# Editeur de Texte Augmente par l'IA pour le Malagasy
 
-Thème : Éditeur de Texte Augmenté par l'IA pour le Malagasy
+Projet TP Machine Learning — Institut Superieur Polytechnique de Madagascar (ISPM)
+Master 2 — Semestre 1
 
->>>>>>> af5d6064e591f265f871cd6b1768556abd19b867
-# Éditeur de Texte Augmenté par l'IA pour le Malagasy
-> **Projet TP Machine Learning** — Institut Supérieur Polytechnique de Madagascar (ISPM)  
-> Master 2 — Semestre 1
+# Lien du projet
+frontend : 
+- Railway : https://malagasy-frontend-production.up.railway.app/editor
+- Render : https://malagasy-frontend.onrender.com/editor 
+backend-proxy : 
+- Railway : https://malagasy-proxy-production.up.railway.app/
+- Render : https://malagasy-proxy.onrender.com
+backend-python : 
+- Railway : https://malagasy-python-production.up.railway.app/
+- Render : https://malagasy-python.onrender.com
 
 ---
 
 ## Membres du groupe
 
-| Nom                       | Rôle                     |
-| ------------------------- | ------------------------ |
+| Nom                       | Role                          |
+| ------------------------- | ----------------------------- |
 | Johaninho                 | Chef de projet / Backend Proxy / Bot |
-| Léonel                    | Backend / models         |
-| Dilan                     | Frontend                 |
-| Koloina                   | UI/UX                    |
-| Zo Bryan, Manitra Koloina | NLP / | Data             |
-| Johaninho, Dilan, Léonel  | DevOps / Intégration     |
+| Leonel                    | Backend / modeles NLP         |
+| Dilan                     | Frontend                      |
+| Koloina                   | UI/UX                         |
+| Zo Bryan, Manitra Koloina | NLP / Data                    |
+| Johaninho, Dilan, Leonel  | DevOps / Integration          |
 
 ---
 
-## Présentation du projet
+## Presentation du projet
 
-Ce projet est un éditeur de texte web intelligent conçu pour assister les rédacteurs malagasy. Le Malagasy étant une langue à faibles ressources numériques (_Low Resource Language_), l'outil combine des approches symboliques, algorithmiques et data-driven pour pallier le manque de données massives. L'objectif est de proposer une expérience fluide et riche, similaire à ce que Word ou Google Docs offre pour le français ou l'anglais.
-
----
-
-## 🤖 Fonctionnalités IA (Description)
-
-### 1. Correction & Validation
-* **Correcteur Orthographique** : Analyse en temps réel via un dictionnaire hybride (Scraping + Levenshtein).
-* **Vérification Phonotactique** : Détection automatique des combinaisons de lettres interdites en Malagasy (`nb`, `mk`, `sz`, etc.) via REGEX.
-
-### 2. Analyse Linguistique
-* **Lemmatisation intelligente** : Algorithme de réduction à la racine basé sur les préfixes (`mi-`, `man-`) et suffixes malagasy, gérant les mutations consonantiques.
-* **Analyse de Sentiment** : Détection de la tonalité du texte (positif/négatif) via un lexique de mots-clés malagasy.
-
-### 3. Assistance à la Rédaction
-* **Autocomplétion (N-gram)** : Prédiction du mot suivant basée sur un modèle statistique de Trigrammes entraîné sur Wikipedia MG et la Bible.
-* **Reconnaissance d'Entités (NER)** : Identification des lieux, institutions et personnalités malagasy.
-* **Synthèse Vocale (TTS)** : Lecture à haute voix du texte pour faciliter la relecture.
+Editeur de texte web intelligent pour le Malagasy, langue a faibles ressources numeriques. L'outil combine des approches symboliques, algorithmiques et statistiques pour proposer de la correction orthographique, de l'autocompletion, de la traduction, de l'analyse de sentiment et un chatbot assistant.
 
 ---
 
-## 🛠️ Stack Technique Résumée
-* **Backend** : Python 3.10+, FastAPI, RapidFuzz, NLTK.
-* **Frontend** : React.js, Quill.js, TailwindCSS.
-* **Données** : Dictionnaire JSON, Corpus TXT, Modèles sérialisés (.pkl).
-
----
-
-### `backend/`
-
-Contient toute la logique serveur de l'application. C'est ici que résident les modules d'intelligence artificielle et les endpoints API appelés par le frontend.
+## Architecture
 
 ```
-backend/
-├── app/         
-│   └── modules/        ← Un fichier Python par fonctionnalité IA (voir détail ci-dessous)
-├── main.py             ← Point d'entrée FastAPI, déclaration de l'app et des routes, Définition des endpoints REST (ex: /autocomplete)
-└── requirements.txt    ← Dépendances Python à installer
+frontend (Next.js)
+     |
+     | HTTP (NEXT_PUBLIC_PROXY_URL)
+     v
+backend-proxy (Node.js / Express)
+     |
+     |-- Google APIs (Translate, TTS, NER, Sentiment, Chat via Gemini)
+     |
+     | HTTP (PYTHON_BACKEND_URL)
+     v
+backend-python (FastAPI)
+     |
+     v
+data/ (dictionnaire, corpus, affixes)
 ```
 
-**Détail des modules IA (`app/modules/`) :**
-
-| Fichier            | Responsabilité                                                                   |
-| ------------------ | -------------------------------------------------------------------------------- |
-| `spell_checker.py` | Correction orthographique via dictionnaire + distance de Levenshtein (rapidfuzz) |
-| `lemmatizer.py`    | Lemmatisation par analyse des préfixes et suffixes malagasy                      |
-| `ngram_model.py`   | Chargement et inférence du modèle N-gram pour l'autocomplétion                   |
-| `ner.py`           | Détection des entités nommées (villes, personnalités) depuis une liste locale    |
-| `sentiment.py`     | Analyse de sentiment positif/négatif par Bag of Words                            |
-| `tts.py`           | Synthèse vocale du texte avec gTTS                                               |
-| `translator.py`    | Traduction mot-à-mot via dictionnaire local ou API Wikipedia                     |
-| `chatbot.py`       | Co-pilote IA pour répondre aux questions de conjugaison et synonymes             |
-
-> Chaque module expose des fonctions Python pures, appelées depuis les routes. Il n'y a pas de logique métier dans `routes/`, uniquement la réception et la réponse HTTP.
+- Le **frontend** ne parle jamais directement au backend Python.
+- Le **proxy** centralise la securite (CORS, rate limiting, helmet, cache Redis optionnel).
+- Le **backend Python** est interne uniquement (non expose publiquement).
 
 ---
 
-### `frontend/`
+## Stack technique
 
-Contient l'interface utilisateur de l'éditeur. Le frontend est totalement libre dans ses choix technologiques et dans l'organisation interne de son code. L'unique contrainte est qu'il consomme les endpoints exposés par le backend via des appels HTTP.
-
-```
-frontend/
-├── src/
-│   ├── components/     ← Composants visuels de l'éditeur (éditeur principal, barre d'outils, panneau latéral, chatbot, etc.)
-│   ├── hooks/          ← Logique réutilisable liée aux appels API (correction, autocomplétion, etc.)
-│   └── ...             ← Le frontend organise le reste comme il le souhaite
-├── index.html
-└── package.json
-```
-
-> Le frontend est responsable de l'expérience utilisateur : fluidité, design, intégration des suggestions inline, affichage des traductions au clic droit, badges de sentiment, etc. L'équipe frontend décide librement de ses composants et de son architecture interne.
+| Couche          | Technologie                                      |
+| --------------- | ------------------------------------------------ |
+| Frontend        | Next.js 14, TypeScript, React Query, CSS Modules |
+| Backend Proxy   | Node.js 20, Express, Helmet, express-rate-limit  |
+| Backend IA      | Python 3.11, FastAPI, RapidFuzz, uvicorn         |
+| Cache           | Redis 7 (optionnel, degradation propre si absent)|
+| IA externe      | Google Gemini (chat, NER, sentiment), Google TTS, Google Translate |
+| Deploiement     | Render (Blueprint render.yaml), Docker           |
 
 ---
 
-### `data/`
-
-Contient toutes les ressources statiques utilisées par les modules IA du backend. Ces fichiers sont construits en amont via les scripts du dossier `scripts/`, puis chargés en mémoire au démarrage du serveur.
+## Structure du projet
 
 ```
-data/
-├── dictionary.json       ← Liste de mots malagasy valides (source : tenymalagasy.org + Wikipedia)
-├── wikipedia_mg.txt      ← Corpus de textes bruts extraits de Wikipedia MG (pour N-grams)
-├── bible_mg.txt          ← Corpus de la Bible malagasy (texte propre, formel)
-├── ngram_model.pkl       ← Modèle N-gram sérialisé (généré par build_ngrams.py, ne pas éditer manuellement)
-├── entities_mg.json      ← Liste des entités nommées : villes, noms propres, institutions
-├── affixes.json          ← Préfixes et suffixes malagasy utilisés pour la lemmatisation
-└── sentiment_words.json  ← Lexique de mots positifs et négatifs pour l'analyse de sentiment
+.
+├── frontend/               # Application Next.js (port 3000)
+│   ├── app/                # Pages et layout (App Router)
+│   ├── components/         # Composants atoms / molecules / organisms
+│   ├── features/           # Panneaux : chatbot, editeur, spellcheck, traduction
+│   ├── hooks/              # Hooks React (useAutocomplete, useSpellcheck, ...)
+│   ├── services/           # Clients HTTP (apiClient.ts)
+│   ├── types/              # Types TypeScript partages
+│   └── Dockerfile
+├── backend-proxy/          # Proxy Node.js/Express (port 8000)
+│   ├── src/
+│   │   ├── server.js       # Point d'entree, middlewares globaux
+│   │   ├── routes/         # autocomplete, translate, tts, ner, sentiment, chat
+│   │   ├── middleware/     # cache Redis, validation express-validator
+│   │   └── gemini.js       # Client Google Gemini avec fallback multi-modeles
+│   └── Dockerfile
+├── backend/                # API Python FastAPI (port 10000)
+│   ├── app/
+│   │   ├── main.py         # Routes FastAPI
+│   │   └── modules/        # spell_checker, lemmatizer, ngram_model
+│   └── dockerfile
+├── data/                   # Donnees partagees (dictionnaire, corpus, affixes)
+├── scripts/                # Scripts de collecte et nettoyage de donnees
+├── render.yaml             # Blueprint Render (deploiement des 3 services)
+├── docker-compose.yml      # Orchestration locale (frontend + proxy + python + redis)
+└── .env.example            # Variables d'environnement requises
 ```
-
-> Ces fichiers sont des données de référence. Ils ne doivent pas être modifiés à la main sauf pour ajouter des entrées au dictionnaire ou au lexique de sentiment. Le fichier `.pkl` est toujours regénéré en lançant `scripts/build_ngrams.py`.
 
 ---
 
-### `scripts/`
+## Fonctionnalites IA
 
-Contient les scripts de préparation des données. Ces scripts sont exécutés **une seule fois** pour construire les fichiers du dossier `data/`. Ils ne font pas partie de l'application en production.
-
-```
-scripts/
-├── scrape_wiki.py        ← Télécharge et nettoie les articles de mg.wikipedia.org via l'API MediaWiki
-├── scrape_teny.py        ← Scrape tenymalagasy.org pour extraire le dictionnaire malagasy
-├── build_dict.py         ← Fusionne et déduplique les sources pour produire dictionary.json
-├── build_ngrams.py       ← Entraîne le modèle N-gram sur les corpus et sérialise ngram_model.pkl
-└── extract_entities.py   ← Extrait les noms de lieux et personnalités depuis Wikipedia pour entities_mg.json
-```
-
-> Pour régénérer toutes les données depuis zéro, exécuter les scripts dans cet ordre :
-> `scrape_wiki.py` → `scrape_teny.py` → `build_dict.py` → `build_ngrams.py` → `extract_entities.py`
+| Fonctionnalite             | Approche                                              | Implemente dans       |
+| -------------------------- | ----------------------------------------------------- | --------------------- |
+| Correction orthographique  | Dictionnaire + distance de Levenshtein (rapidfuzz)    | backend Python        |
+| Verification phonotactique | REGEX (combinaisons interdites : nb, mk, dt, sz...)   | backend Python        |
+| Lemmatisation              | Regles prefixes/suffixes malagasy                     | backend Python        |
+| Autocompletion             | Modele N-gram (bigramme/trigramme) sur corpus Bible   | backend Python        |
+| Traduction                 | Google Translate via proxy                            | backend-proxy         |
+| Synthese vocale (TTS)      | Google TTS via proxy                                  | backend-proxy         |
+| Analyse de sentiment       | Google Gemini via proxy                               | backend-proxy         |
+| Reconnaissance d'entites   | Google Gemini via proxy                               | backend-proxy         |
+| Chatbot assistant          | Google Gemini (fallback multi-modeles) via proxy      | backend-proxy         |
 
 ---
 
-## Fonctionnalités IA
+## Lancement en local
 
-| Fonctionnalité                 | Approche                                            | Module             |
-| ------------------------------ | --------------------------------------------------- | ------------------ |
-| Correcteur orthographique      | Dictionnaire + Levenshtein                          | `spell_checker.py` |
-| Vérification phonotactique     | REGEX (combinaisons interdites : `nb`, `mk`, `dt`…) | `spell_checker.py` |
-| Lemmatisation                  | Règles sur préfixes/suffixes malagasy               | `lemmatizer.py`    |
-| Autocomplétion                 | Modèle N-gram (bigramme/trigramme)                  | `ngram_model.py`   |
-| Traducteur mot-à-mot           | Dictionnaire local + API Wikipedia MG               | `translator.py`    |
-| Analyse de sentiment           | Bag of Words + lexique malagasy                     | `sentiment.py`     |
-| Synthèse vocale (TTS)          | gTTS avec code langue `mg`                          | `tts.py`           |
-| Reconnaissance d'entités (NER) | Liste locale + Wikipedia                            | `ner.py`           |
-| Chatbot assistant              | Claude API (Anthropic)                              | `chatbot.py`       |
+### Pre-requis
+- Docker Desktop installe et demarre
 
----
-
-## Installation et lancement
-
-### Backend
+### Demarrage
 
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
+cp .env.example .env
+# Renseigner GOOGLE_API_KEY dans .env
+docker compose up --build
 ```
 
-### Frontend
+Services disponibles :
+- Frontend : http://localhost:3000
+- Backend Proxy : http://localhost:8000
+- Backend Python : interne uniquement (port 8001)
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
-### Préparer les données (une seule fois)
+## Deploiement (Render)
 
-```bash
-cd scripts
-python scrape_wiki.py
-python scrape_teny.py
-python build_dict.py
-python build_ngrams.py
-python extract_entities.py
-```
+Le fichier `render.yaml` configure les 3 services en Blueprint Render.
+
+1. Pousser le depot sur GitHub
+2. Sur render.com : New > Blueprint > selectionner le depot
+3. Apres le premier deploiement, ajouter dans les variables du service `malagasy-proxy` :
+   - `GOOGLE_API_KEY`
+   - `ANTHROPIC_API_KEY` (optionnel)
+4. Redeclencher le deploiement
+
+URLs produites :
+- `https://malagasy-frontend.onrender.com`
+- `https://malagasy-proxy.onrender.com`
+- `https://malagasy-python.onrender.com` (appele uniquement par le proxy)
 
 ---
 
 ## Variables d'environnement
 
-Copier `.env.example` en `.env` et renseigner les valeurs :
+Copier `.env.example` en `.env` :
 
-```
-ANTHROPIC_API_KEY=sk-...        # Pour le chatbot assistant
-LIBRETRANSLATE_URL=...          # Optionnel, si auto-hébergé
-```
+| Variable             | Obligatoire | Description                              |
+| -------------------- | ----------- | ---------------------------------------- |
+| `GOOGLE_API_KEY`     | Oui         | Cle Google (Gemini, Translate, TTS)      |
+| `ANTHROPIC_API_KEY`  | Non         | Fallback chatbot Claude (optionnel)      |
+| `PYTHON_BACKEND_URL` | Automatique | Defini par docker-compose / render.yaml  |
+| `REDIS_URL`          | Non         | Cache Redis (degrade proprement si absent)|
 
 ---
 
 ## Bibliographie
 
-- Wikipedia Malagasy API : https://mg.wikipedia.org/w/api.php
-- Tenymalagasy.org : https://www.tenymalagasy.org
+### Sources de données
+
+- Kaggle — jeux de données publics : https://www.kaggle.com
+- GitHub — corpus et projets open-source : https://www.github.com
+- Wikipedia Malagasy — articles encyclopédiques en malgache : https://mg.wikipedia.org
+- JW.org — textes parallèles et corpus bilingue malagasy : https://www.jw.org
+- Tenymalagasy.org — dictionnaire et ressources lexicales malagasy : https://www.tenymalagasy.org
+- Wiktionnaire Malagasy — entrées lexicales et définitions : https://mg.wiktionary.org
+
+### Bibliothèques et outils
+
 - rapidfuzz (Levenshtein) : https://github.com/maxbachmann/RapidFuzz
 - gTTS : https://gtts.readthedocs.io
 - FastAPI : https://fastapi.tiangolo.com
-- Quill.js : https://quilljs.com
-- LibreTranslate : https://libretranslate.com
 - NLTK N-grams : https://www.nltk.org
+- Google Generative Language API : https://ai.google.dev
+- Render Blueprint spec : https://render.com/docs/blueprint-spec
 
 ---
 

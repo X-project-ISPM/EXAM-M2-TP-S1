@@ -4,6 +4,9 @@ venv/
 env/
 .env
 
+# Docker override local (hot reload dev)
+docker-compose.override.yml
+
 # Cache Python et fichiers compilés
 __pycache__/
 app/__pycache__/

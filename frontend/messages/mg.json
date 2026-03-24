@@ -31,8 +31,23 @@
     "listen": "Henoy (TTS)"
   },
   "sidebar": {
-    "spellCheck": "⚠ Fanamarinana tsipelina",
-    "translation": "🌐 Fandikan-teny"
+    "spellCheck": "Fanamarinana tsipelina",
+    "translation": "Fandikan-teny",
+    "analysis": "Famakafakana"
+  },
+  "sentiment": {
+    "analyzeBtn": "Hamakafaka ny lahatsoratra",
+    "analyzing": "Famakafakana...",
+    "error": "Nisy hadisoana tamin'ny famakafakana.",
+    "sentiment": "Fihetsika",
+    "words": "teny",
+    "chars": "litera",
+    "entities": "endri-javatra",
+    "detectedEntities": "Endri-javatra hita",
+    "emptyHint": "Tsindrio ny \"Hamakafaka\" hijerena ny fihetsika sy ny endri-javatra.",
+    "labelPositive": "Tsara",
+    "labelNegative": "Ratsy",
+    "labelNeutral": "Antonony"
   },
   "spellcheck": {
     "title": "Fanamarinana tsipelina",
@@ -47,7 +62,7 @@
     "translateBtn": "Adikao"
   },
   "chat": {
-    "title": "🤖 Mpanampy AI",
+    "title": "Mpanampy AI",
     "emptyState": "Anontanio aho momba ny teny malagasy!",
     "typing": "Manoratra ny AI...",
     "inputPlaceholder": "Soraty ny hafatra...",
