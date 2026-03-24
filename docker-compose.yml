@@ -1,0 +1,89 @@
+services:
+
+  # ─────────────────────────────────────────────────────────────
+  # Frontend : Next.js (port 3000)
+  # ─────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_PROXY_URL: http://localhost:8000
+    container_name: malagasy-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend-proxy
+    networks:
+      - malagasy-net
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # Backend Proxy : Node.js + Express (port 8000)
+  # ─────────────────────────────────────────────────────────────
+  backend-proxy:
+    build:
+      context: ./backend-proxy
+      dockerfile: Dockerfile
+    container_name: malagasy-proxy
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - PYTHON_BACKEND_URL=http://backend-python:8001
+      - REDIS_URL=redis://redis:6379
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      - backend-python
+      - redis
+    networks:
+      - malagasy-net
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # Backend IA : Python + FastAPI (port 8001 — interne uniquement)
+  # ─────────────────────────────────────────────────────────────
+  backend-python:
+    build:
+      context: ./backend-python
+      dockerfile: Dockerfile
+    container_name: malagasy-python
+    # Port 8001 NON exposé à l'hôte : uniquement joignable par le proxy
+    expose:
+      - "8001"
+    env_file:
+      - .env
+    volumes:
+      # Données partagées montées en lecture seule dans le conteneur
+      - ./data:/app/data:ro
+    networks:
+      - malagasy-net
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # Cache Redis (port 6379 — interne uniquement)
+  # ─────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: malagasy-redis
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - malagasy-net
+    restart: unless-stopped
+
+# ─── Volumes persistants ────────────────────────────────────────
+volumes:
+  redis-data:
+
+# ─── Réseau interne ─────────────────────────────────────────────
+networks:
+  malagasy-net:
+    driver: bridge

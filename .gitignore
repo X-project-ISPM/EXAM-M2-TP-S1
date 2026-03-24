@@ -1,0 +1,16 @@
+# Environnements virtuels
+backend/venv/
+venv/
+env/
+.env
+
+# Cache Python et fichiers compilés
+__pycache__/
+app/__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / Paquetage
+dist/
+build/
+*.egg-info/
