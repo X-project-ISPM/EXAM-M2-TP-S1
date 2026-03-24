@@ -5,8 +5,8 @@ from app.modules.ngram_model import NGramModel
 
 # Initialisation des modules
 app = FastAPI(title="Malagasy Editor IA API")
-lemmatizer = Lemmatizer()
-spell_module = SpellChecker(lemmatizer=lemmatizer)
+lem_module = Lemmatizer()
+spell_module = SpellChecker(lemmatizer=lem_module)
 ngram_module = NGramModel()
 
 
