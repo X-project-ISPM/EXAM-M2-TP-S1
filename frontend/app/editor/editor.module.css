@@ -1,0 +1,72 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mainArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1rem;
+  background-color: var(--color-bg);
+  overflow: hidden;
+}
+
+.chatContainer {
+  width: 340px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+/* Floating chat button for mobile */
+.chatFab {
+  display: none;
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 70;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .chatContainer {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainArea {
+    padding: 0.5rem;
+  }
+
+  .chatContainer {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    z-index: 90;
+  }
+
+  .chatFab {
+    display: flex;
+  }
+}

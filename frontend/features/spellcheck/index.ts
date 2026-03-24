@@ -1,0 +1,1 @@
+export { SpellcheckPanel } from './SpellcheckPanel';
