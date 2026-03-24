@@ -7,12 +7,11 @@ import { classNames } from '@/utils';
 interface ToolbarProps {
   editor: Editor | null;
   onTranslate?: () => void;
-  onLemmatize?: () => void;
   onTTS?: () => void;
   onAnalyze?: () => void;
 }
 
-export function Toolbar({ editor, onTranslate, onLemmatize, onTTS, onAnalyze }: ToolbarProps) {
+export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps) {
   if (!editor) return null;
 
   const btnClass = (isActive: boolean) =>
@@ -107,11 +106,6 @@ export function Toolbar({ editor, onTranslate, onLemmatize, onTTS, onAnalyze }: 
         {onTranslate && (
           <button className={styles.toolbarBtn} onClick={onTranslate} title="Translate selection" type="button">
             🌐
-          </button>
-        )}
-        {onLemmatize && (
-          <button className={styles.toolbarBtn} onClick={onLemmatize} title="Lemmatize selection" type="button">
-            📖
           </button>
         )}
         {onTTS && (

@@ -29,7 +29,13 @@ app.use(
     },
   })
 );
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL.split(",").map((s) => s.trim())
+      : "http://localhost:3000",
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json({ limit: "50kb" })); // limite la taille du body
 
@@ -58,10 +64,6 @@ app.use("/api/chat",       require("./routes/chat"));
 
 // ─── Routes déléguées au backend Python distant ─────────────────
 app.use("/api/autocomplete", require("./routes/autocomplete"));
-
-// ─── Routes Python supplémentaires (à activer quand disponibles) ─
-// app.use("/api/spellcheck",   require("./routes/spellcheck"));
-// app.use("/api/lemmatize",    require("./routes/lemmatize"));
 
 // ─── Démarrage ────────────────────────────────────────────────
 app.listen(PORT, () => {

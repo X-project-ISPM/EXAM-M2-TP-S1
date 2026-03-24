@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { TopBar } from '@/components/organisms/TopBar';
 import { Sidebar } from '@/components/organisms/Sidebar';
-import { useSpellcheck, useLemmatize } from '@/hooks';
+import { useSpellcheck } from '@/hooks';
 import styles from './editor.module.css';
 
 // Dynamic imports for heavy components
@@ -24,7 +24,6 @@ export default function EditorPage() {
   const [selectedText, setSelectedText] = useState('');
 
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
-  const { result: lemmaResult, lemmatize } = useLemmatize();
 
   const handleTextChange = useCallback(
     (text: string) => {
@@ -59,7 +58,6 @@ export default function EditorPage() {
           spellErrors={spellErrors}
           isChecking={isChecking}
           selectedText={selectedText}
-          lemmaResult={lemmaResult}
           isVisible={sidebarVisible}
         />
 

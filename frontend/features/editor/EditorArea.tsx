@@ -9,9 +9,9 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import { Toolbar } from '@/components/molecules/Toolbar';
 import { ContextMenu } from '@/components/molecules/ContextMenu';
 import type { ContextMenuItem } from '@/components/molecules/ContextMenu';
-import { useSpellcheck, useAutocomplete, useTranslation, useLemmatize, useTTS } from '@/hooks';
+import { useSpellcheck, useAutocomplete, useTranslation, useTTS } from '@/hooks';
 import { stripHtml } from '@/utils';
-import type { EditorContextMenuState, AutocompleteSuggestion, SpellError } from '@/types';
+import type { EditorContextMenuState, AutocompleteSuggestion } from '@/types';
 import styles from './EditorArea.module.css';
 
 interface EditorAreaProps {
@@ -23,7 +23,6 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
   const { suggestions, getSuggestions, clearSuggestions } = useAutocomplete();
   const { translate } = useTranslation();
-  const { lemmatize } = useLemmatize();
   const { speak } = useTTS();
 
   const [contextMenu, setContextMenu] = useState<EditorContextMenuState>({
@@ -108,17 +107,12 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
         onClick: () => translate({ text, sourceLang: 'mg', targetLang: 'fr' }),
       },
       {
-        label: 'Lemmatize',
-        icon: '📖',
-        onClick: () => lemmatize({ word: text }),
-      },
-      {
         label: 'Listen (TTS)',
         icon: '🔊',
         onClick: () => speak(text),
       },
     ];
-  }, [contextMenu.selectedText, translate, lemmatize, speak]);
+  }, [contextMenu.selectedText, translate, speak]);
 
   const handleAutocompletePick = useCallback(
     (suggestion: AutocompleteSuggestion) => {
@@ -138,14 +132,6 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
     translate({ text, sourceLang: 'mg', targetLang: 'fr' });
   }, [editor, translate]);
 
-  const handleToolbarLemmatize = useCallback(() => {
-    if (!editor) return;
-    const { from, to } = editor.state.selection;
-    if (from === to) return;
-    const word = editor.state.doc.textBetween(from, to, ' ');
-    lemmatize({ word });
-  }, [editor, lemmatize]);
-
   const handleToolbarTTS = useCallback(() => {
     if (!editor) return;
     const { from, to } = editor.state.selection;
@@ -161,7 +147,6 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
       <Toolbar
         editor={editor}
         onTranslate={handleToolbarTranslate}
-        onLemmatize={handleToolbarLemmatize}
         onTTS={handleToolbarTTS}
       />
 

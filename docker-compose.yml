@@ -62,6 +62,8 @@ services:
       - "8001"
     env_file:
       - .env
+    environment:
+      - PORT=8001
     volumes:
       # Données partagées montées en lecture seule dans le conteneur
       - ./data:/app/data:ro

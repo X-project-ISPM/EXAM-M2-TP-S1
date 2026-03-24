@@ -1,11 +1,7 @@
 import apiClient from './apiClient';
 import type {
-  SpellcheckRequest,
-  SpellcheckResponse,
   TranslateRequest,
   TranslateResponse,
-  LemmatizeRequest,
-  LemmatizeResponse,
   TTSRequest,
   TTSResponse,
   ChatRequest,
@@ -16,51 +12,79 @@ import type {
   NLPInsightsResponse,
 } from '@/types';
 
-export const spellcheckService = {
-  check: async (data: SpellcheckRequest): Promise<SpellcheckResponse> => {
-    const res = await apiClient.post<SpellcheckResponse>('/spellcheck', data);
-    return res.data;
-  },
-};
-
 export const translateService = {
   translate: async (data: TranslateRequest): Promise<TranslateResponse> => {
-    const res = await apiClient.post<TranslateResponse>('/translate', data);
-    return res.data;
-  },
-};
-
-export const lemmatizeService = {
-  lemmatize: async (data: LemmatizeRequest): Promise<LemmatizeResponse> => {
-    const res = await apiClient.post<LemmatizeResponse>('/lemmatize', data);
-    return res.data;
+    // Adapter les noms de champs : sourceLang/targetLang → from/to
+    const res = await apiClient.post<{ translation: string }>('/translate', {
+      text: data.text,
+      from: data.sourceLang,
+      to: data.targetLang,
+    });
+    return { translatedText: res.data.translation };
   },
 };
 
 export const ttsService = {
   synthesize: async (data: TTSRequest): Promise<TTSResponse> => {
-    const res = await apiClient.post<TTSResponse>('/tts', data);
-    return res.data;
+    const res = await apiClient.post<{ audio: string; format: string; mimeType: string }>('/tts', data);
+    // Construire l'URL data: à partir du base64
+    return { audioUrl: `data:${res.data.mimeType};base64,${res.data.audio}` };
   },
 };
 
 export const chatService = {
   send: async (data: ChatRequest): Promise<ChatResponse> => {
-    const res = await apiClient.post<ChatResponse>('/chat', data);
+    // Adapter le format de l'historique : content → text, assistant → model
+    const res = await apiClient.post<ChatResponse>('/chat', {
+      message: data.message,
+      history: data.history.map((h) => ({
+        role: h.role === 'assistant' ? 'model' : h.role,
+        text: h.content,
+      })),
+    });
     return res.data;
   },
 };
 
 export const autocompleteService = {
   suggest: async (data: AutocompleteRequest): Promise<AutocompleteResponse> => {
-    const res = await apiClient.post<AutocompleteResponse>('/autocomplete', data);
-    return res.data;
+    // Le proxy utilise GET avec query param
+    const res = await apiClient.get<{ suggestions: string[]; type?: 'prediction' | 'correction'; error?: string }>(
+      '/autocomplete',
+      { params: { text: data.text } }
+    );
+    return {
+      suggestions: (res.data.suggestions || []).map((s, i) => ({
+        text: s,
+        score: 1 - i * 0.1,
+      })),
+      type: res.data.type,
+    };
   },
 };
 
 export const nlpService = {
   analyze: async (data: NLPInsightsRequest): Promise<NLPInsightsResponse> => {
-    const res = await apiClient.post<NLPInsightsResponse>('/nlp/insights', data);
-    return res.data;
+    // NER et Sentiment via deux appels parallèles
+    const [nerRes, sentRes] = await Promise.all([
+      apiClient.post<{ entities: Array<{ name: string; type: string; salience: number }> }>('/ner', { text: data.text }),
+      apiClient.post<{ score: number; magnitude: number; label: string }>('/sentiment', { text: data.text }),
+    ]);
+
+    const words = data.text.split(/\s+/).filter(Boolean);
+    return {
+      entities: nerRes.data.entities.map((e) => ({
+        text: e.name,
+        label: e.type,
+        start: 0,
+        end: 0,
+      })),
+      sentiment: {
+        label: sentRes.data.label,
+        score: sentRes.data.score,
+      },
+      wordCount: words.length,
+      charCount: data.text.length,
+    };
   },
 };

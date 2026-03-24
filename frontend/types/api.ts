@@ -75,6 +75,7 @@ export interface AutocompleteSuggestion {
 
 export interface AutocompleteResponse {
   suggestions: AutocompleteSuggestion[];
+  type?: 'prediction' | 'correction';
 }
 
 // ─── NLP Insights ───
