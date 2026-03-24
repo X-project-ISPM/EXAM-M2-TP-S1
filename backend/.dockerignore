@@ -9,4 +9,3 @@ venv
 env
 .git
 .DS_Store
-data/
