@@ -15,10 +15,11 @@ Thème : Éditeur de Texte Augmenté par l'IA pour le Malagasy
 
 | Nom                       | Rôle                     |
 | ------------------------- | ------------------------ |
-| Johaninho                 | Chef de projet / Backend |
+| Johaninho                 | Chef de projet / Backend Proxy / Bot |
+| Léonel                    | Backend / models         |
 | Dilan                     | Frontend                 |
 | Koloina                   | UI/UX                    |
-| Zo Bryan, Léonel, Manitra | NLP / Data               |
+| Zo Bryan, Manitra Koloina | NLP / | Data             |
 | Johaninho, Dilan, Léonel  | DevOps / Intégration     |
 
 ---
