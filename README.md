@@ -1,5 +1,7 @@
 # EXAM-M2-TP-S1
-Thème : Éditeur de Texte Augmenté par l'IA pour le Malagasy 
+
+Thème : Éditeur de Texte Augmenté par l'IA pour le Malagasy
+
 # Éditeur de Texte Augmenté par l'IA pour le Malagasy
 
 > Projet TP Machine Learning — Institut Supérieur Polytechnique de Madagascar  
@@ -9,18 +11,19 @@ Thème : Éditeur de Texte Augmenté par l'IA pour le Malagasy
 
 ## Membres du groupe
 
-| Nom | Rôle |
-|-----|------|
-| _à compléter_ | Chef de projet / Backend |
-| _à compléter_ | Frontend / UX |
-| _à compléter_ | NLP / Data |
-| _à compléter_ | DevOps / Intégration |
+| Nom                       | Rôle                     |
+| ------------------------- | ------------------------ |
+| Johaninho                 | Chef de projet / Backend |
+| Dilan                     | Frontend                 |
+| Koloina                   | UI/UX                    |
+| Zo Bryan, Léonel, Manitra | NLP / Data               |
+| Johaninho, Dilan, Léonel  | DevOps / Intégration     |
 
 ---
 
 ## Présentation du projet
 
-Ce projet est un éditeur de texte web intelligent conçu pour assister les rédacteurs malagasy. Le Malagasy étant une langue à faibles ressources numériques (*Low Resource Language*), l'outil combine des approches symboliques, algorithmiques et data-driven pour pallier le manque de données massives. L'objectif est de proposer une expérience fluide et riche, similaire à ce que Word ou Google Docs offre pour le français ou l'anglais.
+Ce projet est un éditeur de texte web intelligent conçu pour assister les rédacteurs malagasy. Le Malagasy étant une langue à faibles ressources numériques (_Low Resource Language_), l'outil combine des approches symboliques, algorithmiques et data-driven pour pallier le manque de données massives. L'objectif est de proposer une expérience fluide et riche, similaire à ce que Word ou Google Docs offre pour le français ou l'anglais.
 
 ---
 
@@ -63,16 +66,16 @@ backend/
 
 **Détail des modules IA (`app/modules/`) :**
 
-| Fichier | Responsabilité |
-|---|---|
+| Fichier            | Responsabilité                                                                   |
+| ------------------ | -------------------------------------------------------------------------------- |
 | `spell_checker.py` | Correction orthographique via dictionnaire + distance de Levenshtein (rapidfuzz) |
-| `lemmatizer.py` | Lemmatisation par analyse des préfixes et suffixes malagasy |
-| `ngram_model.py` | Chargement et inférence du modèle N-gram pour l'autocomplétion |
-| `ner.py` | Détection des entités nommées (villes, personnalités) depuis une liste locale |
-| `sentiment.py` | Analyse de sentiment positif/négatif par Bag of Words |
-| `tts.py` | Synthèse vocale du texte avec gTTS |
-| `translator.py` | Traduction mot-à-mot via dictionnaire local ou API Wikipedia |
-| `chatbot.py` | Co-pilote IA pour répondre aux questions de conjugaison et synonymes |
+| `lemmatizer.py`    | Lemmatisation par analyse des préfixes et suffixes malagasy                      |
+| `ngram_model.py`   | Chargement et inférence du modèle N-gram pour l'autocomplétion                   |
+| `ner.py`           | Détection des entités nommées (villes, personnalités) depuis une liste locale    |
+| `sentiment.py`     | Analyse de sentiment positif/négatif par Bag of Words                            |
+| `tts.py`           | Synthèse vocale du texte avec gTTS                                               |
+| `translator.py`    | Traduction mot-à-mot via dictionnaire local ou API Wikipedia                     |
+| `chatbot.py`       | Co-pilote IA pour répondre aux questions de conjugaison et synonymes             |
 
 > Chaque module expose des fonctions Python pures, appelées depuis les routes. Il n'y a pas de logique métier dans `routes/`, uniquement la réception et la réponse HTTP.
 
@@ -135,17 +138,17 @@ scripts/
 
 ## Fonctionnalités IA
 
-| Fonctionnalité | Approche | Module |
-|---|---|---|
-| Correcteur orthographique | Dictionnaire + Levenshtein | `spell_checker.py` |
-| Vérification phonotactique | REGEX (combinaisons interdites : `nb`, `mk`, `dt`…) | `spell_checker.py` |
-| Lemmatisation | Règles sur préfixes/suffixes malagasy | `lemmatizer.py` |
-| Autocomplétion | Modèle N-gram (bigramme/trigramme) | `ngram_model.py` |
-| Traducteur mot-à-mot | Dictionnaire local + API Wikipedia MG | `translator.py` |
-| Analyse de sentiment | Bag of Words + lexique malagasy | `sentiment.py` |
-| Synthèse vocale (TTS) | gTTS avec code langue `mg` | `tts.py` |
-| Reconnaissance d'entités (NER) | Liste locale + Wikipedia | `ner.py` |
-| Chatbot assistant | Claude API (Anthropic) | `chatbot.py` |
+| Fonctionnalité                 | Approche                                            | Module             |
+| ------------------------------ | --------------------------------------------------- | ------------------ |
+| Correcteur orthographique      | Dictionnaire + Levenshtein                          | `spell_checker.py` |
+| Vérification phonotactique     | REGEX (combinaisons interdites : `nb`, `mk`, `dt`…) | `spell_checker.py` |
+| Lemmatisation                  | Règles sur préfixes/suffixes malagasy               | `lemmatizer.py`    |
+| Autocomplétion                 | Modèle N-gram (bigramme/trigramme)                  | `ngram_model.py`   |
+| Traducteur mot-à-mot           | Dictionnaire local + API Wikipedia MG               | `translator.py`    |
+| Analyse de sentiment           | Bag of Words + lexique malagasy                     | `sentiment.py`     |
+| Synthèse vocale (TTS)          | gTTS avec code langue `mg`                          | `tts.py`           |
+| Reconnaissance d'entités (NER) | Liste locale + Wikipedia                            | `ner.py`           |
+| Chatbot assistant              | Claude API (Anthropic)                              | `chatbot.py`       |
 
 ---
 
