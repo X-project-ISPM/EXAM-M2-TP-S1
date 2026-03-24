@@ -8,10 +8,14 @@ import type { AutocompleteSuggestion } from '@/types';
 
 export function useAutocomplete() {
   const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([]);
+  const [suggestionType, setSuggestionType] = useState<'prediction' | 'correction'>('prediction');
 
   const mutation = useMutation({
     mutationFn: autocompleteService.suggest,
-    onSuccess: (data) => setSuggestions(data.suggestions),
+    onSuccess: (data) => {
+      setSuggestions(data.suggestions);
+      setSuggestionType(data.type || 'prediction');
+    },
     onError: () => setSuggestions([]),
   });
 
@@ -32,6 +36,7 @@ export function useAutocomplete() {
 
   return {
     suggestions,
+    suggestionType,
     isLoading: mutation.isPending,
     getSuggestions: debouncedSuggest,
     clearSuggestions: () => setSuggestions([]),

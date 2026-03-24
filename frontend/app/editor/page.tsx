@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import { TopBar } from '@/components/organisms/TopBar';
 import { Sidebar } from '@/components/organisms/Sidebar';
 import { useSpellcheck } from '@/hooks';
@@ -19,9 +20,11 @@ const ChatPanel = dynamic(
 );
 
 export default function EditorPage() {
+  const t = useTranslations('chat');
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedText, setSelectedText] = useState('');
+  const [textToTranslate, setTextToTranslate] = useState('');
 
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
 
@@ -51,6 +54,7 @@ export default function EditorPage() {
           <EditorArea
             onTextChange={handleTextChange}
             onSelectionChange={handleSelectionChange}
+            onTranslate={(text) => setTextToTranslate(text)}
           />
         </main>
 
@@ -59,6 +63,8 @@ export default function EditorPage() {
           isChecking={isChecking}
           selectedText={selectedText}
           isVisible={sidebarVisible}
+          textToTranslate={textToTranslate}
+          onClose={() => setSidebarVisible(false)}
         />
 
         {chatOpen && (
@@ -74,7 +80,7 @@ export default function EditorPage() {
           className={styles.chatFab}
           onClick={() => setChatOpen(true)}
           type="button"
-          aria-label="Open chat"
+          aria-label={t('openChat')}
         >
           💬
         </button>

@@ -1,0 +1,61 @@
+{
+  "topBar": {
+    "logo": "Malagasy",
+    "logoAccent": "Editor",
+    "aiChat": "AI Chat",
+    "toggleSidebar": "Toggle Sidebar"
+  },
+  "toolbar": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strikethrough": "Strikethrough",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "bulletList": "Bullet list",
+    "orderedList": "Ordered list",
+    "translate": "Translate selection",
+    "tts": "Text-to-Speech",
+    "analyze": "NLP Analysis"
+  },
+  "editor": {
+    "placeholder": "Start writing here...",
+    "words": "words",
+    "characters": "characters",
+    "checkingSpelling": "Checking spelling...",
+    "issue": "issue",
+    "issues": "issues"
+  },
+  "contextMenu": {
+    "translate": "Translate",
+    "listen": "Listen (TTS)"
+  },
+  "sidebar": {
+    "spellCheck": "⚠ Spell Check",
+    "translation": "🌐 Translation"
+  },
+  "spellcheck": {
+    "title": "Spell Check",
+    "noIssues": "No spelling issues found ✓"
+  },
+  "translation": {
+    "title": "Translation",
+    "malagasy": "Malagasy",
+    "french": "French",
+    "english": "English",
+    "placeholder": "Enter text to translate...",
+    "translateBtn": "Translate"
+  },
+  "chat": {
+    "title": "🤖 AI Assistant",
+    "emptyState": "Ask me anything about Malagasy language!",
+    "typing": "AI is typing...",
+    "inputPlaceholder": "Type a message...",
+    "openChat": "Open chat"
+  },
+  "locale": {
+    "mg": "Malagasy",
+    "fr": "Français",
+    "en": "English"
+  }
+}

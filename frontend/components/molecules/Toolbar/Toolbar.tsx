@@ -1,6 +1,7 @@
 'use client';
 
 import type { Editor } from '@tiptap/react';
+import { useTranslations } from 'next-intl';
 import styles from './Toolbar.module.css';
 import { classNames } from '@/utils';
 
@@ -12,6 +13,7 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps) {
+  const t = useTranslations('toolbar');
   if (!editor) return null;
 
   const btnClass = (isActive: boolean) =>
@@ -24,7 +26,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('bold'))}
           onClick={() => editor.chain().focus().toggleBold().run()}
-          title="Bold"
+          title={t('bold')}
           type="button"
         >
           B
@@ -32,7 +34,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('italic'))}
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          title="Italic"
+          title={t('italic')}
           type="button"
         >
           <em>I</em>
@@ -40,7 +42,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('underline'))}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          title="Underline"
+          title={t('underline')}
           type="button"
         >
           <u>U</u>
@@ -48,7 +50,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('strike'))}
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          title="Strikethrough"
+          title={t('strikethrough')}
           type="button"
         >
           <s>S</s>
@@ -62,7 +64,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('heading', { level: 1 }))}
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          title="Heading 1"
+          title={t('heading1')}
           type="button"
         >
           H1
@@ -70,7 +72,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('heading', { level: 2 }))}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          title="Heading 2"
+          title={t('heading2')}
           type="button"
         >
           H2
@@ -84,7 +86,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('bulletList'))}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          title="Bullet list"
+          title={t('bulletList')}
           type="button"
         >
           &#8226;
@@ -92,7 +94,7 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
         <button
           className={btnClass(editor.isActive('orderedList'))}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          title="Ordered list"
+          title={t('orderedList')}
           type="button"
         >
           1.
@@ -104,17 +106,17 @@ export function Toolbar({ editor, onTranslate, onTTS, onAnalyze }: ToolbarProps)
       {/* AI Actions */}
       <div className={styles.group}>
         {onTranslate && (
-          <button className={styles.toolbarBtn} onClick={onTranslate} title="Translate selection" type="button">
+          <button className={styles.toolbarBtn} onClick={onTranslate} title={t('translate')} type="button">
             🌐
           </button>
         )}
         {onTTS && (
-          <button className={styles.toolbarBtn} onClick={onTTS} title="Text-to-Speech" type="button">
+          <button className={styles.toolbarBtn} onClick={onTTS} title={t('tts')} type="button">
             🔊
           </button>
         )}
         {onAnalyze && (
-          <button className={styles.toolbarBtn} onClick={onAnalyze} title="NLP Analysis" type="button">
+          <button className={styles.toolbarBtn} onClick={onAnalyze} title={t('analyze')} type="button">
             🧠
           </button>
         )}

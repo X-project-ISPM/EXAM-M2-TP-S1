@@ -94,3 +94,48 @@
   font-size: 0.6875rem;
   color: var(--color-text-muted);
 }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .editorContent {
+    padding: 0.75rem;
+  }
+
+  .editorContent :global(.tiptap) {
+    min-height: 180px;
+    font-size: 0.9375rem;
+  }
+
+  .editorContent :global(.tiptap h1) {
+    font-size: 1.375rem;
+  }
+  .editorContent :global(.tiptap h2) {
+    font-size: 1.125rem;
+  }
+
+  .autocompletePopup {
+    left: 0.5rem !important;
+    right: 0.5rem;
+    max-width: calc(100vw - 1rem);
+    min-width: auto;
+  }
+
+  .autocompleteItem {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .statusBar {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .editorContent {
+    padding: 0.5rem;
+  }
+
+  .editorContent :global(.tiptap) {
+    min-height: 140px;
+  }
+}

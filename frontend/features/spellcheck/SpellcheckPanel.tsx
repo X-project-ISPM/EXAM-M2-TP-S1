@@ -1,6 +1,7 @@
 'use client';
 
 import type { SpellError } from '@/types';
+import { useTranslations } from 'next-intl';
 import { Spinner } from '@/components/atoms';
 import styles from './SpellcheckPanel.module.css';
 
@@ -11,14 +12,16 @@ interface SpellcheckPanelProps {
 }
 
 export function SpellcheckPanel({ errors, isChecking, onApplySuggestion }: SpellcheckPanelProps) {
+  const t = useTranslations('spellcheck');
+
   return (
     <div className={styles.panel}>
       <div className={styles.title}>
-        Spell Check {isChecking && <Spinner size="sm" />}
+        {t('title')} {isChecking && <Spinner size="sm" />}
       </div>
 
       {errors.length === 0 && !isChecking && (
-        <p className={styles.empty}>No spelling issues found ✓</p>
+        <p className={styles.empty}>{t('noIssues')}</p>
       )}
 
       <div className={styles.errorList}>

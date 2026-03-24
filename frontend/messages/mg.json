@@ -1,0 +1,61 @@
+{
+  "topBar": {
+    "logo": "Malagasy",
+    "logoAccent": "Editor",
+    "aiChat": "AI Chat",
+    "toggleSidebar": "Asongadino/Afeno ny sisiny"
+  },
+  "toolbar": {
+    "bold": "Matavy",
+    "italic": "Mikihasika",
+    "underline": "Asiana tsipika ambany",
+    "strikethrough": "Tsoahina",
+    "heading1": "Lohateny 1",
+    "heading2": "Lohateny 2",
+    "bulletList": "Lisitra pika",
+    "orderedList": "Lisitra laharana",
+    "translate": "Dikao ny voafidy",
+    "tts": "Vakio",
+    "analyze": "Famakafakana NLP"
+  },
+  "editor": {
+    "placeholder": "Manomboka manoratra eto...",
+    "words": "teny",
+    "characters": "litera",
+    "checkingSpelling": "Manamarina ny tsipelina...",
+    "issue": "olana",
+    "issues": "olana"
+  },
+  "contextMenu": {
+    "translate": "Adikao",
+    "listen": "Henoy (TTS)"
+  },
+  "sidebar": {
+    "spellCheck": "⚠ Fanamarinana tsipelina",
+    "translation": "🌐 Fandikan-teny"
+  },
+  "spellcheck": {
+    "title": "Fanamarinana tsipelina",
+    "noIssues": "Tsy misy olana tsipelina hita ✓"
+  },
+  "translation": {
+    "title": "Fandikan-teny",
+    "malagasy": "Malagasy",
+    "french": "Frantsay",
+    "english": "Anglisy",
+    "placeholder": "Ampidiro ny lahatsoratra hadika...",
+    "translateBtn": "Adikao"
+  },
+  "chat": {
+    "title": "🤖 Mpanampy AI",
+    "emptyState": "Anontanio aho momba ny teny malagasy!",
+    "typing": "Manoratra ny AI...",
+    "inputPlaceholder": "Soraty ny hafatra...",
+    "openChat": "Sokafy ny resaka"
+  },
+  "locale": {
+    "mg": "Malagasy",
+    "fr": "Français",
+    "en": "English"
+  }
+}

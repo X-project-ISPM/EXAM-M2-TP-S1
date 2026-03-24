@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@/hooks';
+import { useTranslations } from 'next-intl';
 import { classNames } from '@/utils';
 import { sanitizeText } from '@/utils';
 import styles from './ChatPanel.module.css';
@@ -15,6 +16,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const { messages, isLoading, sendMessage } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('chat');
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,7 +41,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   return (
     <div className={styles.chatPanel}>
       <div className={styles.header}>
-        <span className={styles.headerTitle}>🤖 AI Assistant</span>
+        <span className={styles.headerTitle}>{t('title')}</span>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.125rem', color: 'var(--color-text-muted)' }} type="button">
           ✕
         </button>
@@ -49,7 +51,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
         {messages.length === 0 && (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>💬</span>
-            <span>Ask me anything about Malagasy language!</span>
+            <span>{t('emptyState')}</span>
           </div>
         )}
 
@@ -65,7 +67,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
           </div>
         ))}
 
-        {isLoading && <div className={styles.typing}>AI is typing...</div>}
+        {isLoading && <div className={styles.typing}>{t('typing')}</div>}
         <div ref={messagesEndRef} />
       </div>
 
@@ -75,7 +77,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message..."
+          placeholder={t('inputPlaceholder')}
           disabled={isLoading}
         />
         <button

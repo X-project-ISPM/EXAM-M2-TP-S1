@@ -6,10 +6,11 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
 import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Toolbar } from '@/components/molecules/Toolbar';
 import { ContextMenu } from '@/components/molecules/ContextMenu';
 import type { ContextMenuItem } from '@/components/molecules/ContextMenu';
-import { useSpellcheck, useAutocomplete, useTranslation, useTTS } from '@/hooks';
+import { useSpellcheck, useAutocomplete, useTTS } from '@/hooks';
 import { stripHtml } from '@/utils';
 import type { EditorContextMenuState, AutocompleteSuggestion } from '@/types';
 import styles from './EditorArea.module.css';
@@ -17,13 +18,14 @@ import styles from './EditorArea.module.css';
 interface EditorAreaProps {
   onTextChange?: (text: string) => void;
   onSelectionChange?: (text: string) => void;
+  onTranslate?: (text: string) => void;
 }
 
-export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps) {
+export function EditorArea({ onTextChange, onSelectionChange, onTranslate }: EditorAreaProps) {
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
-  const { suggestions, getSuggestions, clearSuggestions } = useAutocomplete();
-  const { translate } = useTranslation();
+  const { suggestions, suggestionType, getSuggestions, clearSuggestions } = useAutocomplete();
   const { speak } = useTTS();
+  const t = useTranslations();
 
   const [contextMenu, setContextMenu] = useState<EditorContextMenuState>({
     visible: false,
@@ -39,7 +41,7 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Manomboka manoratra eto... (Start writing here...)' }),
+      Placeholder.configure({ placeholder: t('editor.placeholder') }),
       Underline,
       Highlight.configure({ multicolor: true }),
     ],
@@ -57,6 +59,11 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
       }
     },
     editorProps: {
+      attributes: {
+        spellcheck: 'false',
+        autocorrect: 'off',
+        autocapitalize: 'off',
+      },
       handleKeyDown: (_view, event) => {
         if (event.key === ' ' && editor) {
           const text = stripHtml(editor.getHTML());
@@ -102,26 +109,44 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
     if (!text) return [];
     return [
       {
-        label: 'Translate',
+        label: t('contextMenu.translate'),
         icon: '🌐',
-        onClick: () => translate({ text, sourceLang: 'mg', targetLang: 'fr' }),
+        onClick: () => onTranslate?.(text),
       },
       {
-        label: 'Listen (TTS)',
+        label: t('contextMenu.listen'),
         icon: '🔊',
         onClick: () => speak(text),
       },
     ];
-  }, [contextMenu.selectedText, translate, speak]);
+  }, [contextMenu.selectedText, onTranslate, speak]);
 
   const handleAutocompletePick = useCallback(
     (suggestion: AutocompleteSuggestion) => {
       if (!editor) return;
-      editor.chain().focus().insertContent(suggestion.text).run();
+      const { from } = editor.state.selection;
+      const textBefore = editor.state.doc.textBetween(0, from, '\0');
+
+      if (suggestionType === 'correction') {
+        // For corrections, replace the last word (skip trailing whitespace)
+        const match = textBefore.match(/(\S+)\s*$/);
+        if (match) {
+          const wordEnd = textBefore.lastIndexOf(match[1]) + match[1].length;
+          const wordStart = wordEnd - match[1].length;
+          editor.chain().focus()
+            .deleteRange({ from: wordStart, to: from })
+            .insertContent(suggestion.text + ' ')
+            .run();
+        }
+      } else {
+        // For predictions, just insert the next word at cursor
+        editor.chain().focus().insertContent(suggestion.text + ' ').run();
+      }
+
       setShowAutocomplete(false);
       clearSuggestions();
     },
-    [editor, clearSuggestions]
+    [editor, clearSuggestions, suggestionType]
   );
 
   const handleToolbarTranslate = useCallback(() => {
@@ -129,8 +154,8 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
     const { from, to } = editor.state.selection;
     if (from === to) return;
     const text = editor.state.doc.textBetween(from, to, ' ');
-    translate({ text, sourceLang: 'mg', targetLang: 'fr' });
-  }, [editor, translate]);
+    onTranslate?.(text);
+  }, [editor, onTranslate]);
 
   const handleToolbarTTS = useCallback(() => {
     if (!editor) return;
@@ -185,8 +210,8 @@ export function EditorArea({ onTextChange, onSelectionChange }: EditorAreaProps)
 
       {/* Status bar */}
       <div className={styles.statusBar}>
-        <span>{wordCount} words &bull; {charCount} characters</span>
-        <span>{isChecking ? 'Checking spelling...' : `${spellErrors.length} issue${spellErrors.length !== 1 ? 's' : ''}`}</span>
+        <span>{wordCount} {t('editor.words')} &bull; {charCount} {t('editor.characters')}</span>
+        <span>{isChecking ? t('editor.checkingSpelling') : `${spellErrors.length} ${spellErrors.length !== 1 ? t('editor.issues') : t('editor.issue')}`}</span>
       </div>
     </div>
   );

@@ -1,0 +1,61 @@
+{
+  "topBar": {
+    "logo": "Malagasy",
+    "logoAccent": "Editor",
+    "aiChat": "Chat IA",
+    "toggleSidebar": "Afficher/Masquer le panneau"
+  },
+  "toolbar": {
+    "bold": "Gras",
+    "italic": "Italique",
+    "underline": "Souligné",
+    "strikethrough": "Barré",
+    "heading1": "Titre 1",
+    "heading2": "Titre 2",
+    "bulletList": "Liste à puces",
+    "orderedList": "Liste numérotée",
+    "translate": "Traduire la sélection",
+    "tts": "Synthèse vocale",
+    "analyze": "Analyse NLP"
+  },
+  "editor": {
+    "placeholder": "Commencez à écrire ici...",
+    "words": "mots",
+    "characters": "caractères",
+    "checkingSpelling": "Vérification orthographique...",
+    "issue": "erreur",
+    "issues": "erreurs"
+  },
+  "contextMenu": {
+    "translate": "Traduire",
+    "listen": "Écouter (TTS)"
+  },
+  "sidebar": {
+    "spellCheck": "⚠ Vérification orthographique",
+    "translation": "🌐 Traduction"
+  },
+  "spellcheck": {
+    "title": "Vérification orthographique",
+    "noIssues": "Aucune erreur trouvée ✓"
+  },
+  "translation": {
+    "title": "Traduction",
+    "malagasy": "Malgache",
+    "french": "Français",
+    "english": "Anglais",
+    "placeholder": "Entrez le texte à traduire...",
+    "translateBtn": "Traduire"
+  },
+  "chat": {
+    "title": "🤖 Assistant IA",
+    "emptyState": "Posez-moi vos questions sur la langue malgache !",
+    "typing": "L'IA écrit...",
+    "inputPlaceholder": "Tapez un message...",
+    "openChat": "Ouvrir le chat"
+  },
+  "locale": {
+    "mg": "Malagasy",
+    "fr": "Français",
+    "en": "English"
+  }
+}

@@ -66,9 +66,16 @@
 
 @media (max-width: 480px) {
   .topBar {
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
   }
   .logo {
     font-size: 0.9375rem;
+  }
+  .right {
+    gap: 0.25rem;
+  }
+  .iconBtn {
+    width: 2.25rem;
+    height: 2.25rem;
   }
 }

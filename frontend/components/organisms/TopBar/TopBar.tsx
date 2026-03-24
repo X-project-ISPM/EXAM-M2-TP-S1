@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { LocaleSwitcher } from '@/components/atoms';
 import styles from './TopBar.module.css';
 
 interface TopBarProps {
@@ -8,19 +10,22 @@ interface TopBarProps {
 }
 
 export function TopBar({ onToggleSidebar, onToggleChat }: TopBarProps) {
+  const t = useTranslations('topBar');
+
   return (
     <header className={styles.topBar}>
       <div className={styles.left}>
         <span className={styles.logo}>
-          Malagasy<span className={styles.logoAccent}>Editor</span>
+          {t('logo')}<span className={styles.logoAccent}>{t('logoAccent')}</span>
         </span>
       </div>
 
       <div className={styles.right}>
-        <button className={styles.iconBtn} onClick={onToggleChat} title="AI Chat" type="button">
+        <LocaleSwitcher />
+        <button className={styles.iconBtn} onClick={onToggleChat} title={t('aiChat')} type="button">
           💬
         </button>
-        <button className={styles.iconBtn} onClick={onToggleSidebar} title="Toggle Sidebar" type="button">
+        <button className={styles.iconBtn} onClick={onToggleSidebar} title={t('toggleSidebar')} type="button">
           ☰
         </button>
         <div className={styles.avatar}>MG</div>

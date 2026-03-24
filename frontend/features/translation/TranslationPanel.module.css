@@ -64,3 +64,26 @@
   text-align: center;
   padding: 1rem 0;
 }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .langRow {
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .arrow {
+    display: none;
+  }
+
+  .langSelect {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .inputArea {
+    font-size: 0.875rem;
+    min-height: 48px;
+  }
+}
