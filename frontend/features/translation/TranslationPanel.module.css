@@ -1,61 +1,103 @@
 .panel {
   padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
 }
 
 .title {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.125rem;
 }
 
 .langRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: 0.375rem;
+}
+
+/* Custom select wrapper */
+.selectWrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .langSelect {
-  flex: 1;
-  padding: 0.375rem 0.5rem;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.4375rem 1.75rem 0.4375rem 0.625rem;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.8125rem;
+  font-weight: 500;
   background: var(--color-surface);
   color: var(--color-text);
   font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  line-height: 1.4;
+}
+.langSelect:hover {
+  border-color: var(--color-border-strong);
+}
+.langSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.selectChevron {
+  position: absolute;
+  right: 0.5rem;
+  pointer-events: none;
+  color: var(--color-text-muted);
+  transform: rotate(90deg);
+  flex-shrink: 0;
 }
 
 .arrow {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--color-text-muted);
+  flex-shrink: 0;
+  font-weight: 600;
 }
 
 .inputArea {
   width: 100%;
-  min-height: 60px;
-  padding: 0.5rem;
+  min-height: 64px;
+  padding: 0.5rem 0.625rem;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.8125rem;
   resize: vertical;
   font-family: inherit;
-  margin-bottom: 0.5rem;
   background: var(--color-bg);
   color: var(--color-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.inputArea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .resultBox {
-  padding: 0.625rem;
-  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--color-text);
   min-height: 40px;
-  margin-top: 0.5rem;
 }
 
 .empty {
@@ -76,10 +118,13 @@
     display: none;
   }
 
-  .langSelect {
+  .selectWrapper {
     width: 100%;
-    padding: 0.5rem;
+  }
+
+  .langSelect {
     font-size: 0.875rem;
+    padding: 0.5rem 1.75rem 0.5rem 0.625rem;
   }
 
   .inputArea {

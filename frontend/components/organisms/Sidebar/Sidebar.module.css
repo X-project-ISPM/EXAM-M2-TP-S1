@@ -7,6 +7,8 @@
   overflow-y: auto;
   flex-shrink: 0;
   transition: width 0.2s;
+  /* subtle inner shadow on the left edge */
+  box-shadow: inset 2px 0 6px rgba(0, 0, 0, 0.02);
 }
 
 .sidebar.hidden {
@@ -29,26 +31,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.625rem 0.75rem;
+  padding: 0.5rem 0.875rem;
   cursor: pointer;
   user-select: none;
+  border-left: 2px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+  min-height: 2.25rem;
 }
 .sectionHeader:hover {
   background-color: var(--color-bg-hover);
+  border-left-color: var(--color-primary);
+}
+
+.sectionTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+}
+
+.sectionIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .sectionTitle {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--color-text-secondary);
 }
 
 .sectionToggle {
-  font-size: 0.625rem;
   color: var(--color-text-muted);
-  transition: transform 0.15s;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 .sectionToggle.open {
   transform: rotate(90deg);

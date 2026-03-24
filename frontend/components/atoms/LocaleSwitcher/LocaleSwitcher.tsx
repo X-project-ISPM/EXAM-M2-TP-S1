@@ -4,8 +4,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { setLocale } from '@/app/actions';
 import type { Locale } from '@/i18n';
+import { IconChevronRight } from '@/components/atoms/Icons';
+import styles from './LocaleSwitcher.module.css';
 
-const localeFlags: Record<string, string> = { mg: '🇲🇬', fr: '🇫🇷', en: '🇬🇧' };
+const localeCodes: Record<string, string> = { mg: 'MG', fr: 'FR', en: 'EN' };
 
 export function LocaleSwitcher() {
   const currentLocale = useLocale();
@@ -20,25 +22,23 @@ export function LocaleSwitcher() {
   };
 
   return (
-    <select
-      value={currentLocale}
-      onChange={handleChange}
-      disabled={isPending}
-      style={{
-        background: 'var(--color-surface, #1e1e2e)',
-        color: 'var(--color-text, #cdd6f4)',
-        border: '1px solid var(--color-border, #45475a)',
-        borderRadius: '6px',
-        padding: '4px 8px',
-        fontSize: '0.8rem',
-        cursor: 'pointer',
-      }}
-    >
-      {(['mg', 'fr', 'en'] as const).map((loc) => (
-        <option key={loc} value={loc}>
-          {localeFlags[loc]} {t(loc)}
-        </option>
-      ))}
-    </select>
+    <div className={styles.wrapper}>
+      <span className={styles.code}>{localeCodes[currentLocale]}</span>
+      <span className={styles.label}>{t(currentLocale as Locale)}</span>
+      <select
+        className={styles.select}
+        value={currentLocale}
+        onChange={handleChange}
+        disabled={isPending}
+        aria-label="Select language"
+      >
+        {(['mg', 'fr', 'en'] as const).map((loc) => (
+          <option key={loc} value={loc}>
+            {t(loc)}
+          </option>
+        ))}
+      </select>
+      <IconChevronRight size={11} className={styles.chevron} />
+    </div>
   );
 }

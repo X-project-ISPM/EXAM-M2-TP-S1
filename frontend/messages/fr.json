@@ -31,8 +31,23 @@
     "listen": "Écouter (TTS)"
   },
   "sidebar": {
-    "spellCheck": "⚠ Vérification orthographique",
-    "translation": "🌐 Traduction"
+    "spellCheck": "Vérification orthographique",
+    "translation": "Traduction",
+    "analysis": "Analyse"
+  },
+  "sentiment": {
+    "analyzeBtn": "Analyser le texte",
+    "analyzing": "Analyse en cours...",
+    "error": "Erreur lors de l'analyse.",
+    "sentiment": "Sentiment",
+    "words": "mots",
+    "chars": "caractères",
+    "entities": "entités",
+    "detectedEntities": "Entités détectées",
+    "emptyHint": "Cliquez sur \"Analyser\" pour voir le sentiment et les entités du texte.",
+    "labelPositive": "Positive",
+    "labelNegative": "Négative",
+    "labelNeutral": "Neutre"
   },
   "spellcheck": {
     "title": "Vérification orthographique",
@@ -47,7 +62,7 @@
     "translateBtn": "Traduire"
   },
   "chat": {
-    "title": "🤖 Assistant IA",
+    "title": "Assistant IA",
     "emptyState": "Posez-moi vos questions sur la langue malgache !",
     "typing": "L'IA écrit...",
     "inputPlaceholder": "Tapez un message...",

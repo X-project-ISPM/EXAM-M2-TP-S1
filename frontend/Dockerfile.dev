@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Installer les dépendances uniquement
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Le code source est monté via volume dans docker-compose.override.yml
+# Pas de COPY . . ici — le hot reload gère les changements en temps réel
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

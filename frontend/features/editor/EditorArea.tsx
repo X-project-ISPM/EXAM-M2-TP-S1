@@ -19,9 +19,10 @@ interface EditorAreaProps {
   onTextChange?: (text: string) => void;
   onSelectionChange?: (text: string) => void;
   onTranslate?: (text: string) => void;
+  onAnalyze?: () => void;
 }
 
-export function EditorArea({ onTextChange, onSelectionChange, onTranslate }: EditorAreaProps) {
+export function EditorArea({ onTextChange, onSelectionChange, onTranslate, onAnalyze }: EditorAreaProps) {
   const { errors: spellErrors, isChecking, checkSpelling } = useSpellcheck();
   const { suggestions, suggestionType, getSuggestions, clearSuggestions } = useAutocomplete();
   const { speak } = useTTS();
@@ -173,6 +174,7 @@ export function EditorArea({ onTextChange, onSelectionChange, onTranslate }: Edi
         editor={editor}
         onTranslate={handleToolbarTranslate}
         onTTS={handleToolbarTTS}
+        onAnalyze={onAnalyze}
       />
 
       <div className={styles.editorContent} onContextMenu={handleContextMenu}>
