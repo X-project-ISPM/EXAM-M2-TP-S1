@@ -1,22 +1,18 @@
 FROM python:3.11-slim
 
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Installer les dépendances système minimales
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copier et installer les dépendances Python en premier (cache Docker)
+# Copier les dépendances depuis le dossier 'backend' (contexte de build)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le code source
-COPY main.py .
-COPY app/ ./app/
+# Copier tout le contenu du dossier 'backend' dans /app du conteneur
+COPY . .
 
-# Le dossier data/ est monté en volume depuis docker-compose (lecture seule)
+# Définir le port (Render utilise 10000 par défaut)
+ENV PORT=10000
 
-EXPOSE 8001
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
+# Commande de lancement : on utilise "app.main:app" 
+# car main.py est dans le dossier app/
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
