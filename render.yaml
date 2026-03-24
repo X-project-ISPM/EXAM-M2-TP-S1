@@ -35,8 +35,6 @@ services:
       # ⚠ Renseigner ces clés dans le dashboard Render après le premier déploiement
       - key: GOOGLE_API_KEY
         sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
 
   # ─────────────────────────────────────────────────────────────────
   # Frontend Next.js (port 3000)
@@ -48,9 +46,9 @@ services:
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     plan: free
-    # Build args injectés dans le Dockerfile au moment du `docker build`
-    dockerBuildArgs:
-      - NEXT_PUBLIC_PROXY_URL=https://malagasy-proxy.onrender.com
     envVars:
       - key: NODE_ENV
         value: production
+      # Render passe automatiquement les envVars comme --build-arg si ARG est déclaré dans le Dockerfile
+      - key: NEXT_PUBLIC_PROXY_URL
+        value: https://malagasy-proxy.onrender.com
