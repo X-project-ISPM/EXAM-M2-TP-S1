@@ -1,0 +1,30 @@
+=== Wikipedia Malagasy -- 20000 articles cibles ===
+
+Recuperation des titres d'articles...
+  Titres uniques : 20000
+  [1000/20000] 20 articles, 107 mots
+  [2000/20000] 40 articles, 107 mots
+  [3000/20000] 60 articles, 108 mots
+  [4000/20000] 80 articles, 108 mots
+  [5000/20000] 100 articles, 112 mots
+  [6000/20000] 120 articles, 113 mots
+  [7000/20000] 140 articles, 155 mots
+  [8000/20000] 160 articles, 959 mots
+  fetch erreur: HTTPSConnectionPool(host='mg.wikipedia.org', port=443): Read timed out. (read timeout=20)
+  [9000/20000] 179 articles, 1052 mots
+  fetch erreur: HTTPSConnectionPool(host='mg.wikipedia.org', port=443): Read timed out. (read timeout=20)
+  [10000/20000] 197 articles, 1242 mots
+  [11000/20000] 216 articles, 1500 mots
+  [12000/20000] 236 articles, 1588 mots
+  [13000/20000] 256 articles, 1831 mots
+  [14000/20000] 276 articles, 2008 mots
+  [15000/20000] 296 articles, 2197 mots
+  [16000/20000] 316 articles, 2391 mots
+  [17000/20000] 336 articles, 2552 mots
+  [18000/20000] 356 articles, 2638 mots
+  [19000/20000] 376 articles, 2802 mots
+  [20000/20000] 394 articles, 2890 mots
+
+Articles extraits : 394
+Corpus -> data\corpus\wiki_mg.txt (280 Ko, 39,940 tokens)
+Mots filtres : 2890

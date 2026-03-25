@@ -1,9 +1,10 @@
 import json
 import csv
+from _filter import ROOT
 
 # Configuration des fichiers
-input_csv = '../data/ville.csv'
-output_json = '../data/tanana_mg.json'
+input_csv = str(ROOT / 'data' / 'ville.csv')
+output_json = str(ROOT / 'data' / 'tanana_mg.json')
 
 def generate_locations_json(source, destination):
     try:

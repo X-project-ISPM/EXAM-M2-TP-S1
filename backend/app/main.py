@@ -30,7 +30,7 @@ def read_root():
 
 @app.get("/lemmatize/{word}")
 def lemmatize_word(word: str):
-    root = lemmatizer.get_root(word)
+    root = lem_module.get_root(word)
     return {
         "original": word,
         "root": root,

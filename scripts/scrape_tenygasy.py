@@ -1,79 +1,79 @@
-import requests
-from bs4 import BeautifulSoup
-import json
-import os
-import time
-import urllib3
+"""
+scrape_tenygasy.py
+==================
+Collecte de vocabulaire malagasy depuis tenymalagasy.org.
 
-# Désactive les alertes SSL pour éviter le blocage [cite: 47]
+Le site propose un index alphabétique de mots avec définitions.
+Le script parcourt chaque page de l'index et extrait les entrées.
+
+Sortie :
+  data/corpus/dictionary.json  ← mots filtrés (fusionnés via _filter)
+
+Usage :
+  py scripts/scrape_tenygasy.py
+"""
+
+import time
+
+import requests
+import urllib3
+from bs4 import BeautifulSoup
+from _filter import is_valid_malagasy, save_dict
+
+# Désactive les alertes SSL (certificat expiré sur tenymalagasy.org)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from scrape_wiki import is_valid_malagasy 
+HEADERS = {"User-Agent": "ProjetML2_ISPM/1.0 (etudiant@ispm.mg)"}
+INDEX_URL = "https://tenymalagasy.org/bins/alphaLists"
 
-def get_all_list_links():
-    index_url = "https://tenymalagasy.org/bins/alphaLists"
-    headers = {'User-Agent': 'Projet_IA_ISPM_Etudiant/1.0'}
+
+def get_all_list_links() -> list:
     links = []
-
     try:
-        # verify=False pour passer l'erreur de certificat SSL [cite: 47]
-        response = requests.get(index_url, headers=headers, verify=False)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        for a in soup.find_all('a', href=True):
-            if 'alphaLists' in a['href'] and a['href'] != 'alphaLists':
-                full_url = f"https://tenymalagasy.org{a['href']}"
-                if full_url not in links:
-                    links.append(full_url)
+        r = requests.get(INDEX_URL, headers=HEADERS, verify=False, timeout=20)
+        soup = BeautifulSoup(r.text, "html.parser")
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if "alphaLists" in href and href != "alphaLists":
+                full = f"https://tenymalagasy.org{href}"
+                if full not in links:
+                    links.append(full)
     except Exception as e:
-        print(f"Erreur lors de la lecture de l'index : {e}")
-    
+        print(f"Erreur index : {e}")
     return links
 
-def scrape_words_from_link(url):
-    headers = {'User-Agent': 'Projet_IA_ISPM_Etudiant/1.0'}
-    words_found = set()
+
+def scrape_words_from_link(url: str) -> set:
+    words = set()
     try:
-        response = requests.get(url, headers=headers, verify=False)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # On cible les balises <b> qui contiennent les entrées de dictionnaire sur ce site 
-        for b in soup.find_all('b'):
-            word = b.text.strip()
-            if is_valid_malagasy(word): 
-                words_found.add(word.lower())
+        r = requests.get(url, headers=HEADERS, verify=False, timeout=20)
+        soup = BeautifulSoup(r.text, "html.parser")
+        for b in soup.find_all("b"):
+            w = b.text.strip()
+            if is_valid_malagasy(w):
+                words.add(w.lower())
     except Exception as e:
-        print(f"Erreur sur {url} : {e}")
-    return words_found
+        print(f"  Erreur {url}: {e}")
+    return words
+
 
 def main():
-    print("1. Récupération de tous les liens de l'index...")
+    print("=== tenymalagasy.org ===\n")
+    print("1. Récupération de l'index alphabétique...")
     all_links = get_all_list_links()
-    print(f"Nombre de pages à parcourir : {len(all_links)}")
+    print(f"   Pages trouvées : {len(all_links)}")
 
-    final_lexicon = set()
-    
+    all_words: set = set()
     for i, link in enumerate(all_links):
-        print(f"[{i+1}/{len(all_links)}] Scraping : {link}")
-        new_words = scrape_words_from_link(link)
-        final_lexicon.update(new_words)
-        
+        new = scrape_words_from_link(link)
+        all_words.update(new)
+        if (i + 1) % 10 == 0:
+            print(f"  [{i+1}/{len(all_links)}] {len(all_words)} mots")
         time.sleep(0.5)
 
-    # Sauvegarde finale dans /data 
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    output_path = os.path.join(base_dir, 'data', 'dico.json')
-    
-    # Charger l'existant pour fusionner  
-    if os.path.exists(output_path):
-        with open(output_path, 'r', encoding='utf-8') as f:
-            existing = json.load(f)
-            final_lexicon.update(existing)
+    print(f"\nTotal extrait : {len(all_words)} mots")
+    save_dict(all_words, "tenymalagasy")
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(sorted(list(final_lexicon)), f, ensure_ascii=False, indent=4)
-    
-    print(f"\nTerminé ! Dictionnaire total : {len(final_lexicon)} mots.")
 
 if __name__ == "__main__":
     main()

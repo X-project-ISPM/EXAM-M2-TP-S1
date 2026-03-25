@@ -18,14 +18,14 @@ backend-python :
 
 ## Membres du groupe
 
-| Nom                       | Role                          |
-| ------------------------- | ----------------------------- |
-| Johaninho                 | Chef de projet / Backend Proxy / Bot |
-| Leonel                    | Backend / modeles NLP         |
-| Dilan                     | Frontend                      |
-| Koloina                   | UI/UX                         |
-| Zo Bryan, Manitra Koloina | NLP / Data                    |
-| Johaninho, Dilan, Leonel  | DevOps / Integration          |
+| Nom                        | Role                                            |
+| -------------------------- | ------------------------------------------------|
+| Johaninho                  | Chef de projet / Backend Proxy / Bot / frontend |
+| Leonel                     | Backend / modeles NLP                           |
+| Dilan                      | Frontend                                        |
+| Koloina                    | UI/UX                                           |
+| Zo Bryan, Manitra, Koloina | NLP / Data                                      |
+| Johaninho, Dilan, Leonel   | DevOps / Integration                            |
 
 ---
 
@@ -108,9 +108,9 @@ data/ (dictionnaire, corpus, affixes)
 
 ## Fonctionnalites IA
 
-| Fonctionnalite             | Approche                                              | Implemente dans       |
-| -------------------------- | ----------------------------------------------------- | --------------------- |
-| Correction orthographique  | Dictionnaire + distance de Levenshtein (rapidfuzz)    | backend Python        |
+| Fonctionnalite             | Approche                                              | Implemente dans       
+| -------------------------- | ----------------------------------------------------- |
+| Correction orthographique  | Dictionnaire + distance de Levenshtein (rapidfuzz)    | backend Python
 | Verification phonotactique | REGEX (combinaisons interdites : nb, mk, dt, sz...)   | backend Python        |
 | Lemmatisation              | Regles prefixes/suffixes malagasy                     | backend Python        |
 | Autocompletion             | Modele N-gram (bigramme/trigramme) sur corpus Bible   | backend Python        |

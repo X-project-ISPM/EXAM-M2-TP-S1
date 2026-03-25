@@ -1,8 +1,9 @@
 import json
+from _filter import ROOT
 
 # Configuration des fichiers
-input_txt = '../data/anarana_malagasy.txt'
-output_json = '../data/anarana_mg.json'
+input_txt = str(ROOT / 'data' / 'anarana_malagasy.txt')
+output_json = str(ROOT / 'data' / 'anarana_mg.json')
 
 def generate_names_json(source, destination):
     try:

@@ -65,8 +65,8 @@ services:
     environment:
       - PORT=8001
     volumes:
-      # Données partagées montées en lecture seule dans le conteneur
-      - ./data:/app/data:ro
+      # Données partagées — rw pour le cache n-gram (ngram_model.pkl)
+      - ./data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/').read()"]
       interval: 10s
@@ -90,6 +90,22 @@ services:
     networks:
       - malagasy-net
     restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # Pipeline Data : Scraping + Nettoyage + Entraînement n-gram
+  # ─────────────────────────────────────────────────────────────
+  pipeline:
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    container_name: malagasy-pipeline
+    profiles:
+      - pipeline
+    volumes:
+      - ./data:/app/data
+      - ./backend/data:/app/backend/data
+    networks:
+      - malagasy-net
 
 # ─── Volumes persistants ────────────────────────────────────────
 volumes:
